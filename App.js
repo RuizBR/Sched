@@ -1,51 +1,153 @@
-import "react-native-gesture-handler";
 import React from 'react';
+import { View, Image, Text, StatusBar, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
-
-import Welcome from './screens/Welcome';
-import Login from './screens/Login';
-import Personalization from './screens/Personalization';
-import Schedule from './screens/Schedule';
-import Conflict from './screens/Conflict';
-import Calendar from './screens/Calendar';
-import Request from './screens/Request';
-import Dashboard from './screens/Dashboard';
+import Welcome from './screens/Starting/Welcome';
+import Login from './screens/Starting/Login';
+import Personalization from './screens/Navigation/Personalization';
+import Schedule from './screens/Navigation/Schedule';
+import Dashboard from './screens/Navigation/Dashboard';
+import SubjectList from './screens/SubjectList';
+import SubjectAdd from './screens/AddForm/SubjectAdd';
+import FacultyList from './screens/FacultyList';
+import FacultyAdd from './screens/AddForm/FacultyAdd';
+import AddBlock from './screens/AddForm/AddBlock'
+import AddRoom from './screens/AddForm/AddRoom';
+import Rooms from './screens/RoomList';
+import Blocks from './screens/Blocks';
+import Signup from './screens/Starting/Signup';
+import EditCourseScreen from './screens/EditForm/editCourseScreen';
+import EditFacultyScreen from './screens/EditForm/editFacultyScreen';
+import EditRoomScreen from './screens/EditForm/editRoomScreen';
+import EditBlockScreen from './screens/EditForm/editBlockScreen';
 
 const Stack = createNativeStackNavigator();
-const Drawer = createDrawerNavigator();
- 
-function DrawerRoutes() {
+const Tab = createBottomTabNavigator();
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
+function TabNavigator() {
+
   return (
-    <Drawer.Navigator initialRouteName="Dashboard"
-    screenOptions={{
-        headerStyle: {
-          backgroundColor: '#E0F2F1', // Set your header color here
+    <Tab.Navigator
+      screenOptions={{
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 15,
+          right: 50,
+          left: 50,
+          height: windowHeight * 0.09,
+          opacity: 0.9,
+          backgroundColor: '#CCCCCC',
+          borderRadius: 50, // Increased border radius
+          borderWidth: 5,
+          borderColor: 'rgba(0, 0, 0, 0.3)', // Color for the shadow
+          shadowColor: '#111',
+          shadowOpacity: 0.5,
         },
-        drawerStyle: {
-          backgroundColor: '#E0F2F1', // Set your drawer background color here
+        tabBarShowLabel: false,
+        tabBarOptions: {
+          labelStyle: {
+            fontSize: 12,
+          },
         },
-      }}
-      >
-      <Drawer.Screen name="Home" component={Dashboard}  />
-      <Drawer.Screen name="Personalization" component={Personalization} />
-      <Drawer.Screen name="Schedule Management" component={Schedule} />
-      <Drawer.Screen name="Conflict Resolution" component={Conflict} />
-      <Drawer.Screen name="Calendar View" component={Calendar} />
-      <Drawer.Screen name="Time of Request" component={Request} />
-    </Drawer.Navigator>
+      }}>
+      <Tab.Screen
+        name="Home"
+        component={Dashboard}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View style={{ alignItems: 'center', justifyContent: 'center', left: 10 }}>
+                <Ionicons name="ios-home" size={24} color={focused ? '#007260' : '#111'} />
+                <Text style={{ textAlign: 'center', fontSize: 12, color: '#111' }}>Home</Text>
+              </View>
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Schedule"
+        component={Schedule}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: focused? '#007260' : '#111',
+                  width: windowWidth * 0.16,
+                  height: windowHeight * 0.08,
+                  top: focused? -30 : 0,
+                  borderRadius: 50,
+                }}>
+                <FontAwesome name="desktop" size={24} color={'#fff'} />
+              </View>
+            );
+          },
+        }}
+      />
+      <Tab.Screen
+        name="Personalization"
+        component={Personalization}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View style={{ alignItems: 'center',justifyContent: 'center', right: 10 }}>
+                <Ionicons name="ios-settings" size={24} color={focused ? '#007260' : '#111'} />
+                <Text style={{ textAlign: 'center', fontSize: 12, color: '#111' }}>Settings</Text>
+              </View>
+            );
+          },
+        }}
+      />
+    </Tab.Navigator>
   );
 }
- 
-function App() {
+
+function App(navigation) {
   return (
     <NavigationContainer>
+    <StatusBar backgroundColor={"#E0F2F1"} barStyle="dark-content" />
       <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Dashboard" component={DrawerRoutes} options={{ headerShown: false }} />
+        <Stack.Screen name="SubjectList" component={SubjectList} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="SubjectAdd" component={SubjectAdd} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="FacultyList" component={FacultyList} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="FacultyAdd" component={FacultyAdd} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="AddBlock" component={AddBlock} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Rooms" component={Rooms} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Blocks" component={Blocks} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="AddRoom" component={AddRoom} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Signup" component={Signup} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditCourse" component={EditCourseScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditBlock" component={EditBlockScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditFaculty" component={EditFacultyScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditRoom" component={EditRoomScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen
+          name="Dashboard"
+          component={TabNavigator}
+          options={{
+            headerTitle: () => (
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Image source={require('./assets/AdaptiveLogo.png')} style={{ width: 50, height: 50, marginRight: 10 }} />
+                <Text style={{ fontSize: 15, fontWeight: 'bold' }}>Adaptive Scheduling System for CCS</Text>
+              </View>
+            ),
+            headerBackVisible: false,
+            headerStyle: {
+              backgroundColor: '#E0F2F1',
+            },
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
