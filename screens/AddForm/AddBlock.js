@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Modal} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Modal, ScrollView} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { readAllCourses, readCourse }  from '../../src/components/Courses';
@@ -7,27 +7,45 @@ import { Students } from '../../src/index'
 import MultiSelect from 'react-native-multiple-select';
 import COLORS from '../../constants/colors';
 
-
-class AddBlock extends Component{
+class AddBlock extends Component {
     state = {
         program: '',
+        major: '',
         year: '',
         semester: '',
         block: '',
         modalVisible: false, // Add a state to manage the modal visibility
         courses: [], // State to manage selected courses
         allCourses: [],
+        majorOptions: [], // State to manage available major options based on selected program
     }
 
     clearInputs = () => {
         this.setState({
             program: '',
+            major: '',
             year: '',
             semester: '',
             block: '',
-            courses: []
+            courses: [],
         });
     };
+
+    handleProgram = (text) => {
+        let majorOptions = [];
+
+        if (text === 'BSCS') {
+            majorOptions = ['Data Science', 'N/A'];
+        } else if (text === 'BSIT') {
+            majorOptions = ['System Development', 'Business Analytics', 'N/A'];
+        }
+
+        this.setState({ 
+            program: text,
+            major: '', // Reset major when program changes
+            majorOptions: majorOptions,
+        });
+    }
 
     openCourseSelection = async () => {
         try {
@@ -39,14 +57,14 @@ class AddBlock extends Component{
                 console.log('Available Courses After Setting State:', this.state.allCourses);
             });
         } catch (error) {
-            console.error('Failed to fetch courses:', error);
+            console.error('Failed to fe   tch courses:', error);
             // Handle error condition - show an alert or perform other actions
         }
     };
 
 
-    handleProgram = (text) => {
-        this.setState({ program: text })
+    handleMajor = (text) => {
+        this.setState({ major: text });
     }
     handleYear = (text) => {
         this.setState({ year: text })
@@ -57,57 +75,69 @@ class AddBlock extends Component{
     handleBlock = (text) => {
         this.setState({ block: text })
     }
+    
 
     save = async () => {
-    const { program, year, semester, block, courses } = this.state;
+        const { program, major, year, semester, block, courses } = this.state;
 
-    if (!program || !year || !semester || !block || !Array.isArray(courses) || courses.length === 0) {
-        Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
-        return;
-    }
+        if (!program || !major || !year || !semester || !block || !Array.isArray(courses) || courses.length === 0) {
+            Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
+            return;
+        }
 
-    console.log('Saving Block Details...');
-    console.log('Program:', program);
-    console.log('Year:', year);
-    console.log('Semester:', semester);
-    console.log('Block:', block);
-    console.log('Courses:', courses); // Check the structure of courses first
+        console.log('Saving Block Details...');
+        console.log('Program:', program);
+        console.log('Major:', major);
+        console.log('Year:', year);
+        console.log('Semester:', semester);
+        console.log('Block:', block);
+        console.log('Courses:', courses); // Check the structure of courses first
 
-    try {
-        const student = new Students();
+        try {
+            const student = new Students();
 
-        // Fetch course details based on their IDs
-        const courseDetailsPromises = courses.map(courseId => readCourse(courseId)); // Assuming readCourse fetches course details by ID
+            // Fetch course details based on their IDs
+            const courseDetailsPromises = courses.map(courseId => readCourse(courseId)); // Assuming readCourse fetches course details by ID
 
-        // Resolve all promises to get course details
-        const courseDetails = await Promise.all(courseDetailsPromises);
+            // Resolve all promises to get course details
+            const courseDetails = await Promise.all(courseDetailsPromises);
 
-        console.log('Fetched Course Details:', courseDetails);
+            console.log('Fetched Course Details:', courseDetails);
 
-        // Map the fetched course details to include necessary properties for block creation
-        const coursesForBlock = courseDetails.map(course => ({
-            _id: course._id,
-            code: course.code,
-            description: course.description,
-            units: course.units,
-            type: course.type,
-        }));
+            // Map the fetched course details to include necessary properties for block creation
+            const coursesForBlock = courseDetails.map(course => ({
+                _id: course._id,
+                code: course.code,
+                description: course.description,
+                units: course.units,
+                type: course.type,
+            }));
 
-        console.log('Courses for Block:', coursesForBlock);
+            console.log('Courses for Block:', coursesForBlock);
 
-        // Save block details with the associated courses
-        await student.create(program, year, semester, block, coursesForBlock);
+            // Save block details with the associated courses
+            await student.create(program, major, year, semester, block, coursesForBlock);
 
-        // Display success message or perform further actions
-        Alert.alert('Created Successfully', 'Details saved successfully.');
+            // Display success message or perform further actions
+            setTimeout(() => {
+                Alert.alert('Created Successfully', 'Details saved successfully.', [
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            // Navigate to Dashboard screen
+                            this.props.navigation.navigate('Blocks');
+                        },
+                    }
+                ]);
 
+            }, 500);
             this.clearInputs();
-        // Further operations with courseDetails...
-    } catch (error) {
-        Alert.alert('Error', 'Failed to create block. Please try again.');
-        console.error('Error creating block:', error);
-    }
-};
+            // Further operations with courseDetails...
+        } catch (error) {
+            Alert.alert('Error', 'Failed to create block. Please try again.');
+            console.error('Error creating block:', error);
+        }
+    };
 
 
 
@@ -166,6 +196,43 @@ class AddBlock extends Component{
             </View>
         </View>
     </View>
+
+    {/* Major Picker */}
+    {/* Major Picker */}
+    <View style={{ marginBottom: 12 }}>
+                    <Text style={{
+                        fontSize: 16,
+                        fontWeight: 400,
+                        marginVertical: 8
+                    }}>Major:</Text>
+                    <View style={{
+                        flexDirection: 'row',
+                        width: '90%',
+                        backgroundColor: "#bce3e1",
+                        borderRadius: 15,
+                        alignItems: 'center',
+                    }}>
+                        <View style={{
+                            backgroundColor: 'white',
+                            width: "100%",
+                            height: 48,
+                            borderRadius: 15,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}>
+                            <Picker
+                                selectedValue={this.state.major}
+                                style={{ height: 50, width: "100%" }}
+                                onValueChange={(itemValue) => this.setState({ major: itemValue })}
+                            >
+                                <Picker.Item label="Select Type" value="" color={COLORS.grey} enabled={true} />
+                                {this.state.majorOptions.map((option, index) => (
+                                    <Picker.Item key={index} label={option} value={option} />
+                                ))}
+                            </Picker>
+                        </View>
+                    </View>
+                </View>
 
 {/* Year Picker */}
     <View style={{ marginBottom: 12 }}>
@@ -318,7 +385,7 @@ class AddBlock extends Component{
             this.setState({ modalVisible: false });
         }}
     >
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
         <View style={{ 
             backgroundColor: 'white', 
             padding: 20, 
@@ -334,6 +401,8 @@ class AddBlock extends Component{
             shadowRadius: 10,
             elevation: 7, }}>
             <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Select Courses</Text>
+            {/* Wrap MultiSelect with ScrollView */}
+            <ScrollView style={{ maxHeight: 400 }}> 
             <MultiSelect
                 items={this.state.allCourses && this.state.allCourses.allCourses ? this.state.allCourses.allCourses.map(course => ({
                     _id: course._id,
@@ -379,28 +448,29 @@ class AddBlock extends Component{
                 submitButtonText="Submit"
                 onConfirm={() => {
                     
-                    const { courses, program, year, semester, block } = this.state;
-                    if (!program || !year || !semester || !block || courses.length === 0) {
+                    const { courses, program, major, year, semester, block} = this.state;
+                    if (!program || !major || !year || !semester || !block || courses.length === 0) {
                         Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
                         return;
                     }
 
                     // Call the save function to handle saving the selected courses
-                    this.save(this.state.program, this.state.year, this.state.semester, this.state.block, this.state.courses);
+                    this.save(this.state.program, this.state.major, this.state.year, this.state.semester, this.state.block, this.state.courses);
                     
                     // Close the modal or perform any additional actions
                     this.setState({ modalVisible: false });
                 }}
 
             />
+            </ScrollView>
             <TouchableOpacity
                 onPress={() => {
                     this.setState({ modalVisible: false });
                     // Any additional actions when closing the modal
                 }}
-                style={{ marginTop: 20, alignSelf: 'flex-end' }}
+                style={{ marginTop: 20, alignSelf: 'center' }}
             >
-                <Text style={{ color: COLORS.primary, fontSize: 18 }}>Close</Text>
+                <Text style={{ color: COLORS.primary, fontSize: 20, textAlign: 'center' }}>Close</Text>
             </TouchableOpacity>
         </View>
     </View>
@@ -420,7 +490,7 @@ class AddBlock extends Component{
         justifyContent: 'center',
         paddingHorizontal: 10,
     }}
-        onPress = {() => this.save(this.state.program, this.state.year, this.state.semester, this.state.block, this.state.courses)} 
+        onPress = {() => this.save(this.state.program, this.state.major, this.state.year, this.state.semester, this.state.block, this.state.courses)} 
         >
         <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
             Save
@@ -446,7 +516,7 @@ class AddBlock extends Component{
     </View>
 
 {/* block list view */}
-    <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%'}}>
+    {/* <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%'}}>
     <TouchableOpacity style={{
         marginRight: 20,
         alignItems: 'center',
@@ -458,7 +528,7 @@ class AddBlock extends Component{
         >View List
         </Text>
     </TouchableOpacity>
-    </View>
+    </View> */} 
 
     </View>
   );

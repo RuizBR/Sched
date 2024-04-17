@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { readCourse, updateCourse } from '../../src/components/Courses';
 import COLORS from '../../constants/colors';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 const EditCourseScreen = ({ route, navigation }) => {
   const { courseId } = route.params;
@@ -212,7 +213,7 @@ const EditCourseScreen = ({ route, navigation }) => {
       paddingHorizontal: 10,
     }}>
       <TouchableOpacity onPress={handleUpdate}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+        <Text style={{ fontSize: RFValue(15), fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
           Update Course
         </Text>
       </TouchableOpacity>

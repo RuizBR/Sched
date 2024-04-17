@@ -16,7 +16,11 @@ function RoomList() {
 
   useEffect(() => {
     fetchRooms();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchRooms(); // Refresh rooms when screen comes into focus
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const fetchRooms = async () => {
     try {
@@ -110,6 +114,10 @@ function RoomList() {
   // // Navigate to the EditScreen with the roomId as a parameter
   // navigation.navigate('EditRoom', { roomId: itemId });
   // };
+  const handleSelectAll = () => {
+    const allItemIds = rooms.map((rooms) => rooms._id);
+    setSelectedItems(allItemIds); // Mark all items as selected
+  };
 
   const renderSelectDeleteButtons = () => {
     return (
@@ -120,11 +128,14 @@ function RoomList() {
           </TouchableOpacity>
         ) : (
           <>
+            <TouchableOpacity onPress={handleSelectAll}>
+              <Ionicons name="ios-checkbox" size={24} color="black" style={{ marginRight: 12 }} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleDeleteSelected}>
-              <Ionicons name="trash" size={20} color="black" style={{ marginRight: 15 }} />
+              <Ionicons name="trash" size={24} color="black" style={{ marginRight: 15 }} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleToggleSelection}>
-              <Ionicons name="ios-close-circle" size={20} color="black" style={{ marginRight: 10 }} />
+              <Ionicons name="ios-close-circle" size={24} color="black" style={{ marginRight: 10 }} />
             </TouchableOpacity>
           </>
         )}
@@ -207,14 +218,14 @@ function RoomList() {
                 </View>
             </View>
 
-            {/* {isSelectionMode && (
+            {isSelectionMode && (
               <Ionicons
                 name={isSelected ? 'ios-checkbox' : 'ios-checkbox-outline'}
                 size={25}
                 color={isSelected ? COLORS.primary : 'grey'}
                 style={{ marginRight: 20 }}
               />
-            )} */}
+            )}
         </TouchableOpacity>
 
       </View>

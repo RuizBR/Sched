@@ -17,7 +17,12 @@ function SubjectList() {
 
   useEffect(() => {
     fetchCourses();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchCourses(); // Refresh courses when screen comes into focus
+    });
+    return unsubscribe;
+  }, [navigation]);
+  
 
   const fetchCourses = async () => {
     try {
@@ -42,7 +47,7 @@ function SubjectList() {
       setSelectedItems((prevItems) => [...prevItems, itemId]); // Select if not already selected
     }
   };
-
+  
   const handleDeleteSelected = async () => {
     if (selectedItems.length === 0) {
       // If no items are selected, return or display an alert indicating no items are selected
@@ -112,27 +117,38 @@ function SubjectList() {
   // // Navigate to the EditCourseScreen with the courseId as a parameter
   // navigation.navigate('EditCourse', { courseId: itemId });
   // };
+  const handleSelectAll = () => {
+    const allItemIds = courses.map((course) => course._id);
+    setSelectedItems(allItemIds); // Mark all items as selected
+  };
+  
 
   const renderSelectDeleteButtons = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         {!isSelectionMode ? (
-          <TouchableOpacity onPress={handleToggleSelection}>
-            <Ionicons name="ios-checkbox-outline" size={24} color="black" style={{ marginRight: 10 }} />
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity onPress={handleToggleSelection}>
+              <Ionicons name="ios-checkbox-outline" size={24} color="black" style={{ marginRight: 10 }} />
+            </TouchableOpacity>
+          </>
         ) : (
           <>
+            <TouchableOpacity onPress={handleSelectAll}>
+              <Ionicons name="ios-checkbox" size={24} color="black" style={{ marginRight: 12 }} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleDeleteSelected}>
-              <Ionicons name="trash" size={20} color="black" style={{ marginRight: 15 }} />
+              <Ionicons name="trash" size={24} color="black" style={{ marginRight: 15 }} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleToggleSelection}>
-              <Ionicons name="ios-close-circle" size={20} color="black" style={{ marginRight: 10 }} />
+              <Ionicons name="ios-close-circle" size={24} color="black" style={{ marginRight: 10 }} />
             </TouchableOpacity>
           </>
         )}
       </View>
     );
   };
+  
 
   const renderRightActions = (itemId) => {
     return (
@@ -209,14 +225,14 @@ function SubjectList() {
                   </View>
             </View>
             
-            {/* {isSelectionMode && (
+            {isSelectionMode && (
               <Ionicons
                 name={isSelected ? 'ios-checkbox' : 'ios-checkbox-outline'}
                 size={25}
                 color={isSelected ? COLORS.primary : 'grey'}
                 style={{ marginLeft: 20 }}
               />
-            )} */}
+            )}
         </TouchableOpacity>
 
       </View>

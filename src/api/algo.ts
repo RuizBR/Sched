@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const baseUrl = 'http://ec2-13-54-170-228.ap-southeast-2.compute.amazonaws.com:5000/activate_csp_algorithm';
+const baseUrl = 'http://192.168.1.9:5000/activate_csp_algorithm';
 
 export const fetchData = async (): Promise<any> => {
   try {
@@ -10,7 +10,7 @@ export const fetchData = async (): Promise<any> => {
     if (response.status === 200) {
       return response.data;
     } else {
-      throw new Error(`Fetching Unsuccessful: ${response.status}`);
+      throw new Error(`Fetching Unsuccessful: ${response.status}`); 
       
     }
   } catch (error) {

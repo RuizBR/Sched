@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Modal, Dimensions, KeyboardAvoidingView} from 'react-native';
+import { View, Text, Image, TouchableOpacity, Modal, Dimensions, KeyboardAvoidingView, ScrollView, ActivityIndicator} from 'react-native';
 import React, { useState, useEffect } from 'react';
 import COLORS from '../../constants/colors';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
@@ -12,6 +12,24 @@ const Personalization = ({ navigation }) => {
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
     const [iconSize, setIconSize] = useState(0);
+    const [loggedInUsername, setLoggedInUsername] = useState(null); 
+    const [detailsVisible, setDetailsVisible] = useState({
+        arrowJunie: false,
+        arrowMaica: false,
+        arrowLeiner: false,
+        arrowBrix: false
+        // Add other keys for other items if needed
+    });
+    const [loading, setLoading] = useState(false); // State to manage loading indicator
+
+    // Function to toggle visibility
+    const toggleDetailsVisibility = (key) => {
+        setDetailsVisible(prevState => ({
+            ...prevState,
+            [key]: !prevState[key]
+        }));
+    };
+    
 
     useEffect(() => {
         const screenWidth = Dimensions.get('window').width;
@@ -26,8 +44,13 @@ const Personalization = ({ navigation }) => {
         setIsContactModalVisible(!isContactModalVisible);
     };
     const handleLogout = () => {
-        setIsModalVisible(!isModalVisible);
-        navigation.navigate('Login'); // Replace 'Login' with your actual login screen route
+        setLoading(true); // Set loading to true when logout starts
+        setIsModalVisible(false); // Hide the modal immediately
+        // Simulate a delay for logout (replace with actual logout logic)
+        setTimeout(() => {
+            setLoading(false); // Set loading to false after the delay
+            navigation.navigate('Login'); // Replace 'Login' with your actual login screen route
+        }, 2000); // Delay for 2 seconds
     };
 
   return (
@@ -40,7 +63,7 @@ const Personalization = ({ navigation }) => {
             backgroundColor: "#bce3e1",
             borderRadius: 350,
             justifyContent: 'center',
-            marginBottom: 20,
+            marginBottom: 50,
         }}>
             
         {/* Logo */}
@@ -53,13 +76,13 @@ const Personalization = ({ navigation }) => {
             />
             
     </View>
-    
+{/*     
         <Text style={{ fontSize: RFValue(15), fontWeight: "bold", marginBottom: 30 }}>
                     ADMINISTRATOR
-        </Text>
+        </Text> */}
            
 
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
         onPress={toggleContactModal}
         style={{
                 width: "100%",
@@ -71,10 +94,10 @@ const Personalization = ({ navigation }) => {
                 flexDirection: 'row',
                 marginBottom: 10
             }}>
-                <Ionicons name="person-circle-outline" size={iconSize} color="black" style={{ marginLeft: 20 }} />
-                <Text style={{ fontSize: RFValue(13), fontWeight: 'bold', color: 'black', marginLeft: 15 }}>Add User</Text>
+                <Ionicons name="key" size={iconSize} color="black" style={{ marginLeft: 20 }} />
+                <Text style={{ fontSize: RFValue(13), fontWeight: 'bold', color: 'black', marginLeft: 15 }}>Change Password</Text>
                 <Ionicons name="ios-caret-forward" size={25} color="black" style={{ position: 'absolute', right: 40 }} />
-            </TouchableOpacity>
+        </TouchableOpacity> */}
 
             {/* Modals */}
             <Modal
@@ -167,44 +190,47 @@ const Personalization = ({ navigation }) => {
             </TouchableOpacity>
             
                 <Text style={{ textAlign: 'center', fontSize: RFValue(11), fontWeight: 'normal', color: 'grey'  }}>Adaptive Scheduling System for CCS</Text>
-                <Text style={{ textAlign: 'center', fontSize: RFValue(8), fontWeight: 'normal', color: 'grey', marginBottom: 10  }}>V.2.0.5</Text>
+                <Text style={{ textAlign: 'center', fontSize: RFValue(8), fontWeight: 'normal', color: 'grey', marginBottom: 10  }}>V.2.0.9</Text>
                 <Text style={{ textAlign: 'left', fontSize: RFValue(11), fontWeight: 'normal', color: 'black', marginLeft: 10  }}>What's New?</Text>
                 <Text style={{ textAlign: 'left', fontSize: RFValue(11), fontWeight: 'normal', color: 'black', marginLeft: 20  }}>*Dynamic Scheduling Enhancements:</Text>
                 <Text style={{ textAlign: 'left', fontSize: RFValue(9), fontWeight: 'normal', color: 'grey', marginLeft: 30  }}>-Improved algorithm for more intelligent and adaptable scheduling.</Text>
                 <Text style={{ textAlign: 'left', fontSize: RFValue(9), fontWeight: 'normal', color: 'grey', marginLeft: 20  }}>-UI Optimization</Text>
                     
 
-            <Modal
+                <Modal
                 animationType="fade"
                 transparent={true}
                 visible={showModal}
                 onRequestClose={() => setShowModal(false)}
             >
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ 
-                        backgroundColor: 'white', 
-                        padding: 20, 
-                        borderRadius: 10, 
-                        alignItems: 'center',
-                        shadowColor: '#000',
-                        shadowOffset: {
-                            width: -10,
-                            height: -10,
-                        },
-                        shadowOpacity: 1,
-                        shadowRadius: 10,
-                        elevation: 7, 
-                    }}>
-                        <Text style={{ fontSize: RFValue(13), marginBottom: 20 }}>
-                            Are you sure you want to log out?
-                        </Text>
-                        <TouchableOpacity onPress={handleLogout}>
-                            <Text style={{ fontSize: RFValue(13), color: 'blue', marginBottom: 10 }}>Yes</Text>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+                <View style={{ 
+                    backgroundColor: 'white', 
+                    padding: 20, 
+                    borderRadius: 10, 
+                    alignItems: 'center',
+                    shadowColor: '#000',
+                    shadowOffset: {
+                        width: -10,
+                        height: -10,
+                    },
+                    shadowOpacity: 1,
+                    shadowRadius: 10,
+                    elevation: 7, 
+                }}>
+                    <Text style={{ fontSize: RFValue(15), marginBottom: 40 }}>
+                        Are you sure you want to log out?
+                    </Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <TouchableOpacity onPress={handleLogout} style={{ marginRight: 10 }}>
+                            <Text style={{ fontSize: RFValue(15), color: 'blue', marginRight: 60 }}>Yes</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => setShowModal(false)}>
-                            <Text style={{ fontSize: RFValue(13), color: 'red', marginTop: 10 }}>No</Text>
+                            <Text style={{ fontSize: RFValue(15), color: 'red' }}>No</Text>
                         </TouchableOpacity>
                     </View>
+                    {loading && <ActivityIndicator style={{marginTop: 20}} size="large" color="#0000ff" />}
+                </View>
                 </View>
             </Modal>
     </View>
@@ -237,65 +263,301 @@ const Personalization = ({ navigation }) => {
             setIsModalVisible(!isModalVisible);
             }}
         >
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <View style={{
-                flex: 1,
-                backgroundColor: '#fff',
-                margin: 50,
-                padding: 20,
-                borderRadius: 40,
-                width: '80%', 
-                maxHeight: '30%', 
-                shadowColor: '#000',
-                shadowOffset: {
-                    width: -10,
-                    height: -10,
-                },
-                shadowOpacity: 1,
-                shadowRadius: 10,
-                elevation: 7,
-            }}>
-    
 {/* About Us content */}
-                <View style={{
-                    flex: 1, 
-                    
-                }}>
-                    <View style={{ alignItems: 'center' }}>
-                        <Text style={{ fontSize: RFValue(15), marginBottom: 25 }}>Contact Us</Text>
-                    </View>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'center', alignItems: 'center' }}>
+            <View style={{ backgroundColor: COLORS.teal, width: '90%', maxHeight: '90%', borderRadius: 15 }}> 
+                <View style={{ padding: 20 }}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <Text style={{ fontSize: 25, marginBottom: 30, textAlign: 'center'}}>About Us </Text>
+                    <View style={{ marginBottom: 20 }}>
+                
+                {/* Details for Junie Ann PAtambang */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', borderRadius: 15, padding: 5, marginBottom: 20}}>
+                        <View style={{ alignItems: 'flex-start' }}>
+                            <Text style={{ fontSize: 15 }}>
+                                <Text style={{ fontWeight: 'bold', marginLeft: 30 }}>Junie Ann Patambang </Text>
+                            </Text>
+                        </View>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-                        <Ionicons name="logo-facebook" size={30} color="darkblue" style={{ marginLeft: 20 }} />
-                        <Text style={{ fontSize: RFValue(13), fontWeight:'bold', marginLeft: 5  }}>Facebook </Text>
+                        <View style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity onPress={() => toggleDetailsVisibility('arrowJunie')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Ionicons name={detailsVisible['arrowJunie'] ? 'arrow-up' : 'arrow-down'} size={25} color="black" style={{ marginLeft: 10, marginRight: 20 }} />
+                            </TouchableOpacity>
+                            
+                        </View>
+                        
                     </View>
+                            {detailsVisible['arrowJunie'] && (
+                                <View style={{
+                                    flexDirection: 'row', 
+                                    alignItems: 'center', 
+                                    height: 100,
+                                    width: '100%',
+                                    backgroundColor: "#bce3e1",
+                                    borderRadius: 15,
+                                    padding: 10,
+                                    marginTop: 10,
+                                    marginBottom: 20,
+                                }}>
+                                    <View style={{ flex: 1}}>
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="mail" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>junie02patambang@gmail.com</Text>
+                                        </View>
 
-                    <View>
-                        <Text style={{ marginLeft: 50, marginBottom: 5 }}> Junie Ann Patambang</Text>
-                        <Text style={{ marginLeft: 50, marginBottom: 5 }}> Leiner Sacdalan</Text>
-                        <Text style={{ marginLeft: 50, marginBottom: 5 }}> Maica Virrey</Text>
-                        <Text style={{ marginLeft: 50, marginBottom: 5 }}> Brixter Ruiz</Text>
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="logo-facebook" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>Junie Ann Patambang</Text>
+                                        </View>
+
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="call" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>09485932755</Text>
+                                        </View>
+                                    </View>
+            
+                                    {/* Logo */}
+                                    <Image source={require('schedulingapp/assets/Junie.png')} 
+                                        style={{
+                                            width: windowWidth * 0.2, 
+                                            height: windowHeight * 0.2, 
+                                            aspectRatio: 1,
+                                        }}/>
+                                </View>
+                            )}
+
+                {/* Details for Jhamaica Virrey */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', borderRadius: 15, padding: 5, marginBottom: 20 }}>
+                        <View style={{ alignItems: 'flex-start' }}>
+                            <Text style={{ fontSize: 15 }}>
+                                <Text style={{ fontWeight: 'bold', marginLeft: 30 }}>Jhamaica Virrey </Text>
+                            </Text>
+                        </View>
+
+                        <View style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity onPress={() => toggleDetailsVisibility('arrowMaica')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Ionicons name={detailsVisible['arrowMaica'] ? 'arrow-up' : 'arrow-down'} size={25} color="black" style={{ marginLeft: 10, marginRight: 20 }} />
+                            </TouchableOpacity>
+                            
+                        </View>
+                        
                     </View>
-                </View>
+                            {detailsVisible['arrowMaica'] && (
+                                <View style={{
+                                    flexDirection: 'row', 
+                                    alignItems: 'center', 
+                                    height: 100,
+                                    width: '100%',
+                                    backgroundColor: "#bce3e1",
+                                    borderRadius: 15,
+                                    padding: 10,
+                                    marginTop: 10,
+                                    marginBottom: 20,
+                                }}>
+                                    <View style={{ flex: 1}}>
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="mail" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>jhamaicavirrey@gmail.com</Text>
+                                        </View>
 
-{/* Close button */}
-                    <TouchableOpacity onPress={toggleModal} 
-                        style={{
-                            position: 'absolute',
-                            bottom: 20,
-                            right: 20,
-                            marginTop: 20,
-                            padding: 10,
-                            backgroundColor: "#bce3e1",
-                            borderRadius: 40,
-                            width: '30%',
-                            alignSelf: 'flex-end',
-                        }}>
-                        <Text style={{ textAlign: 'center', fontSize: RFValue(13), fontWeight: 'normal'  }}>Close</Text>
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="logo-facebook" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>Maica Virrey</Text>
+                                        </View>
+
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="call" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>09513149880</Text>
+                                        </View>
+                                    </View>
+            
+                                    {/* Logo */}
+                                    <Image source={require('schedulingapp/assets/Maica.png')} 
+                                        style={{
+                                            width: windowWidth * 0.2, 
+                                            height: windowHeight * 0.2, 
+                                            aspectRatio: 1,
+                                        }}/>
+                                </View>
+                            )}
+                
+                {/* Details for Leiner Sacdalan */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', borderRadius: 15, padding: 5, marginBottom: 20 }}>
+                        <View style={{ alignItems: 'flex-start' }}>
+                            <Text style={{ fontSize: 15 }}>
+                                <Text style={{ fontWeight: 'bold', marginLeft: 30 }}>Leiner Sacdalan </Text>
+                            </Text>
+                        </View>
+
+                        <View style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity onPress={() => toggleDetailsVisibility('arrowLeiner')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Ionicons name={detailsVisible['arrowLeiner'] ? 'arrow-up' : 'arrow-down'} size={25} color="black" style={{ marginLeft: 10, marginRight: 20 }} />
+                            </TouchableOpacity>
+                            
+                        </View>
+                        
+                    </View>
+                            {detailsVisible['arrowLeiner'] && (
+                                <View style={{
+                                    flexDirection: 'row', 
+                                    alignItems: 'center', 
+                                    height: 100,
+                                    width: '100%',
+                                    backgroundColor: "#bce3e1",
+                                    borderRadius: 15,
+                                    padding: 10,
+                                    marginTop: 10,
+                                    marginBottom: 20,
+                                }}>
+                                    <View style={{ flex: 1}}>
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="mail" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>leinersacdalan11@gmail.com</Text>
+                                        </View>
+
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="logo-facebook" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>Leiner Sacdalan</Text>
+                                        </View>
+
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="call" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>09099859915</Text>
+                                        </View>
+                                    </View>
+            
+                                    {/* Logo */}
+                                    <Image source={require('schedulingapp/assets/Leiner.png')} 
+                                        style={{
+                                            width: windowWidth * 0.2, 
+                                            height: windowHeight * 0.2, 
+                                            aspectRatio: 1,
+                                        }}/>
+                                </View>
+                            )}
+
+                {/* Details for Brixter Ruiz */}
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', borderRadius: 15, padding: 5, marginBottom: 20 }}>
+                        <View style={{ alignItems: 'flex-start' }}>
+                            <Text style={{ fontSize: 15 }}>
+                                <Text style={{ fontWeight: 'bold', marginLeft: 30 }}>Brixter Ruiz </Text>
+                            </Text>
+                        </View>
+
+                        <View style={{ justifyContent: 'center' }}>
+                            <TouchableOpacity onPress={() => toggleDetailsVisibility('arrowBrix')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Ionicons name={detailsVisible['arrowBrix'] ? 'arrow-up' : 'arrow-down'} size={25} color="black" style={{ marginLeft: 10, marginRight: 20 }} />
+                            </TouchableOpacity>
+                            
+                        </View>
+                        
+                    </View>
+                            {detailsVisible['arrowBrix'] && (
+                                <View style={{
+                                    flexDirection: 'row', 
+                                    alignItems: 'center', 
+                                    height: 100,
+                                    width: '100%',
+                                    backgroundColor: "#bce3e1",
+                                    borderRadius: 15,
+                                    padding: 10,
+                                    marginTop: 10,
+                                    marginBottom: 20,
+                                }}>
+                                    <View style={{ flex: 1}}>
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="mail" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>ruizbrixter0@gmail.com</Text>
+                                        </View>
+
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="logo-facebook" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>Brix Ruiz</Text>
+                                        </View>
+
+                                        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                                            {/* Icon */}
+                                            <Ionicons name="call" size={20} color={COLORS.black} style={{ marginLeft: 10 }} />
+                                            <Text style={{
+                                                paddingLeft: 5,
+                                                fontSize: RFValue(12),
+                                                color: COLORS.black
+                                            }}>09674828059</Text>
+                                        </View>
+                                    </View>
+            
+                                    {/* Logo */}
+                                    <Image source={require('schedulingapp/assets/Brixter.png')} 
+                                        style={{
+                                            width: windowWidth * 0.2, 
+                                            height: windowHeight * 0.2, 
+                                            aspectRatio: 1,
+                                        }}/>
+                                </View>
+                            )}
+                    <TouchableOpacity onPress={() => setIsModalVisible(false)} style={{ alignItems: 'center', marginTop: 20 }}>
+                        <Text style={{ fontSize: 16, color: 'blue' }}>Close Modal</Text>
                     </TouchableOpacity>
-
+                    </View>
+                </ScrollView>
+                </View>
             </View>
-        </View>
+        </View>        
         </Modal>
         </View>
         <View>

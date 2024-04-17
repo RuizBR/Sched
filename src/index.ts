@@ -1,10 +1,12 @@
 import { readAllCourses, readCourse, createCourse, updateCourse, deleteCourse } from './components/Courses';
+import { addCurriculumCourse, createCurriculum, deleteCurriculum, deleteCurriculumCourses, readAllCurriculumCourses, readAllCurriculums, readCurriculum, readCurriculumCourse, updateCurriculum, updateCurriculumCourse } from './components/Curriculums';
 import { createRoom, deleteRoom, readAllRooms, readRoom, updateRoom } from './components/Rooms';
 import { deleteAllOptions, readAllOptions, readAllProgram, readSingleProgram, readAllSchedule, readSchedule } from './components/Schedule';
 import { readAllStudents, readStudent, createStudent, updateStudent, deleteStudent, readAllStudentCourses, readStudentCourse, addStudentCourse, updateStudentCourse, deleteStudentCourses } from './components/Students';
 import { addTeacherCourse, createTeacher, deleteTeacher, deleteTeacherCourses, readAllTeacherCourses, readAllTeachers, readTeacher, readTeacherCourse, updateTeacher, updateTeacherCourse } from './components/Teachers';
-import { readAllUsers, createUser, updateUser, deleteUser, readUser } from './components/Users'
+import { readAllUsers, createUser, updateUser, deleteUser, readUser, loginUser } from './components/Users'
 import { courseModel } from './models/Courses';
+import { curriculumCourseModel, curriculumModel } from './models/Curriculums';
 import { roomModel } from './models/Rooms';
 import { scheduleModel, scheduleItemModel, optionsModel } from './models/Schedule';
 import { studentCourseModel, studentCoursesModel, studentModel } from './models/Students';
@@ -48,6 +50,10 @@ export class Users{
         const response = await deleteUser(getID);
         return response
     }
+    async login(_username: string, _password: string) {
+        const response = await loginUser(_username,_password);
+        return response
+    }
 }
 
 export class Teachers{
@@ -78,7 +84,7 @@ export class Teachers{
         return response
     }
 
-    async update(getID: string, getName: string, getSpecialized: any){
+    async update(getID: string, getName: string, getSpecialized: teacherCourseModel[]){
         const response = await updateTeacher(getID, getName, getSpecialized);
         return response
     }
@@ -217,12 +223,13 @@ export class Students{
             const allStudentDetails = studentList.allStudents.map((student: studentModel) => {
                 const _id = student._id;
                 const program = student.program;
+                const major = student.major
                 const year = student.year;
                 const semester = student.semester;
                 const block = student.block;
                 const courses = student.courses;
 
-                return { _id, program, year, semester, block, courses };
+                return { _id, program, major, year, semester, block, courses };
         });
             return allStudentDetails;
 
@@ -237,7 +244,8 @@ export class Students{
     }
 
     async create(
-        getProgram: string, 
+        getProgram: string,
+        getMajor: string, 
         getYear: string, 
         getSemester: string, 
         getBlock: string, 
@@ -245,6 +253,7 @@ export class Students{
         ){
         const response = await createStudent(
             getProgram, 
+            getMajor,
             getYear, 
             getSemester, 
             getBlock, 
@@ -256,6 +265,7 @@ export class Students{
     async update(
         getID: string, 
         getProgram: string, 
+        getMajor: string,
         getYear: string, 
         getSemester: string, 
         getBlock: string, 
@@ -264,6 +274,7 @@ export class Students{
         const response = await updateStudent(
             getID,
             getProgram, 
+            getMajor,
             getYear, 
             getSemester, 
             getBlock, 
@@ -349,6 +360,7 @@ export class Schedules{
             const allSchedules: scheduleModel[] = response.allSchedules.map((programs: scheduleModel) => ({
               _id: programs._id,
               program: programs.program,
+              major: programs.major,
               year: programs.year,
               semester: programs.semester,
               block: programs.block,
@@ -393,13 +405,95 @@ export class Schedules{
     }
 }
 
+export class Curriculum{
+    async readAll() {
+        const curriculumList = await readAllCurriculums();
+
+        if (curriculumList && curriculumList.allCurriculums) {
+            const allCurriculumDetails = curriculumList.allCurriculums.map((Newcurriculum: curriculumModel) => {
+                const _id = Newcurriculum._id;
+                const program = Newcurriculum.program;
+                const year = Newcurriculum.year;
+                const semester = Newcurriculum.semester;
+                const curriculum = Newcurriculum.curriculum;
+                return { _id, program, year, semester, curriculum };
+        });
+            return allCurriculumDetails;
+
+        } else {
+            console.error('Failed to fetch curriculum data or no curriculums found.');
+        }
+    }
+
+    async read(curriculumId: string) {
+        const response = await readCurriculum(curriculumId);
+        return response
+    }
+
+    async create(getProgram: string, getMajor: string, getYear: string, getSemester: string, getCurriculum: any){
+        const response = await createCurriculum(getProgram, getMajor, getYear, getSemester, getCurriculum);
+        return response
+    }
+
+    async update(getID: string, getProgram: string, getMajor: string,getYear: string, getSemester: string, getCurriculum: any){
+        const response = await updateCurriculum(getID, getProgram, getMajor, getYear, getSemester, getCurriculum);
+        return response
+    }
+
+    async delete(getID: string){
+        const response = await deleteCurriculum(getID);
+        return response
+    }
+    async readAllCourses(getID: string) {
+        const courseList = await readAllCurriculumCourses(getID);
+
+        if (courseList && courseList.allCourses) {
+            const allCourseDetails = courseList.allCourses.map((course: curriculumCourseModel) => {
+                const _id = course._id;
+                const code = course.code;
+                const description = course.description;
+                const units = course.units;
+                const type = course.type;
+
+                return { _id, code, description, units, type };
+        });
+            return allCourseDetails;
+
+        } else {
+            console.error('Failed to fetch course data or no courses found.');
+        }
+    }
+
+    async readCourse(getCurriculumID: string, getCourseCode: string){
+        const response = await readCurriculumCourse(getCurriculumID, getCourseCode);
+        return response
+    }
+
+    async addCourse(getCurriculumID: string, getCode: string, getDescription: string, getUnits: string, getType: string){
+        const response: any  = await addCurriculumCourse(getCurriculumID, getCode, getDescription, getUnits, getType);
+        return response
+    }
+
+    async updateCourse(getCurriculumID: string, getID: string, getCode: string, getDescription: string, getUnits: string, getType: string){
+        const response = await updateCurriculumCourse(getCurriculumID, getID, getCode, getDescription, getUnits, getType);
+        return response
+    }
+
+    async deleteCourse(getCurriculumID: string, getCourseID: string){
+        const response = await deleteCurriculumCourses(getCurriculumID, getCourseID);
+        return response
+    }
+}
+
 
 
 // here's how we handle the functions
 async function approach() {
     //user, teacher, rooms, courses has the same approach
-/*  const user = new Users();
+//  const user = new Users();
 
+//     const login = await user.login('user', 'user')
+//     console.log(login)
     // //read a single user
     // const read = await user.read('65622fd76173f67b0bb8a9fa');// _id of the user you want to read
     // console.log(read._id)//id, username, password
@@ -424,7 +518,7 @@ async function approach() {
 
     // //delete user
     // const del = await user.delete( '6563abe53975c81bebf4de20') // user id you want to delete
- */
+ 
 
  /* const teacher = new Teachers();
     
@@ -632,7 +726,7 @@ async function approach() {
     //     )   
     */
     
-    const schedule = new Schedules()
+    // const schedule = new Schedules()
 
     // const response = await schedule.deleteAll()
     // console.log(response)
@@ -667,6 +761,7 @@ async function approach() {
 
     // const response = await schedule.readSingleSchedule('6581227ec7827d752239115f', '6581227ec7827d7522391161', '6581227ec7827d7522391164')
     // console.log(response.courseCode)
+
 
 }
 

@@ -6,6 +6,7 @@ import { readStudent, updateStudent } from '../../src/components/Students';
 import { readAllCourses, readCourse }  from '../../src/components/Courses';
 import MultiSelect from 'react-native-multiple-select';
 import COLORS from '../../constants/colors';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 
 const EditBlockScreen = ({ route, navigation }) => {
@@ -13,12 +14,13 @@ const EditBlockScreen = ({ route, navigation }) => {
 
     const [blockDetails, setBlockDetails] = useState({
         program: '',
+        major: '',
         year: '',
         semester: '',
         block: '',
         courses: [], // Ensure courses is initialized as an empty array
         modalVisible: false,
-        allCourses: [],
+        allCourses: [], 
     });
 
     const openCourseSelection = () => {
@@ -37,6 +39,7 @@ const EditBlockScreen = ({ route, navigation }) => {
                 setBlockDetails(prevState => ({
                     ...prevState,
                     program: blockData.program,
+                    major: blockData.major,
                     year: blockData.year,
                     semester: blockData.semester,
                     block: blockData.block,
@@ -55,9 +58,9 @@ const EditBlockScreen = ({ route, navigation }) => {
 
 
     const handleUpdate = async () => {
-        const { program, year, semester, block, courses } = blockDetails; // Access blockDetails from state
+        const { program, major, year, semester, block, courses } = blockDetails; // Access blockDetails from state
 
-        if (!blockId || !program || !year || !semester || !block || !Array.isArray(courses) || courses.length === 0) {
+        if (!blockId || !program || !major || !year || !semester || !block || !Array.isArray(courses) || courses.length === 0) {
             Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
             return;
         }
@@ -65,6 +68,7 @@ const EditBlockScreen = ({ route, navigation }) => {
     console.log('Updating Block Details...');
     console.log('Block ID:', blockId);
     console.log('Program:', program);
+    console.log('Major:', major);
     console.log('Year:', year);
     console.log('Semester:', semester);
     console.log('Block:', block);
@@ -89,7 +93,7 @@ const EditBlockScreen = ({ route, navigation }) => {
         console.log('Courses for Block:', coursesForBlock);
 
         // Update block details with the associated courses using the updateStudent function
-        await updateStudent(blockId, program, year, semester, block, coursesForBlock);
+        await updateStudent(blockId, program, major, year, semester, block, coursesForBlock);
 
         // Display success message or perform further actions
         Alert.alert('Success', 'Block details updated successfully.');
@@ -149,6 +153,43 @@ const EditBlockScreen = ({ route, navigation }) => {
                     <Picker.Item label="Select Type" value="" color={COLORS.grey} enabled={false} />
                     <Picker.Item label="BSCS" value="BSCS" />
                     <Picker.Item label="BSIT" value="BSIT" />
+                    {/* Add more Picker.Item as needed */}
+                </Picker>
+            </View>
+        </View>
+    </View>
+
+    {/* Program picker */}
+    <View style={{ marginBottom: 12 }}>
+        <Text style={{
+            fontSize: 16,
+            fontWeight: 400,
+            marginVertical: 8
+        }}>Major:</Text>
+        <View style={{
+            flexDirection: 'row',
+            width: '90%',
+            backgroundColor: "#bce3e1",
+            borderRadius: 15,
+            alignItems: 'center',
+        }}>
+            <View style={{
+                backgroundColor: 'white',
+                width: "100%",
+                height: 48,
+                borderRadius: 15,
+                alignItems: "center",
+                justifyContent: "center",
+            }}>
+                <Picker
+                    selectedValue={blockDetails.major}
+                    style={{ height: 50, width: "100%" }}
+                    onValueChange={(itemValue) => setBlockDetails({ ...blockDetails, major: itemValue })}
+                >
+                    <Picker.Item label="Select Type" value="" color={COLORS.grey} enabled={false} />
+                    <Picker.Item label="Data Science" value="DS" />
+                    <Picker.Item label="System Development" value="SD" />
+                    <Picker.Item label="N/A" value="N/A" />
                     {/* Add more Picker.Item as needed */}
                 </Picker>
             </View>
@@ -259,6 +300,9 @@ const EditBlockScreen = ({ route, navigation }) => {
                     <Picker.Item label="Select Type" value="" color={COLORS.grey} enabled={false} />
                     <Picker.Item label="A" value="A" />
                     <Picker.Item label="B" value="B" />
+                    <Picker.Item label="C" value="C" />
+                    <Picker.Item label="D" value="D" />
+                    <Picker.Item label="E" value="E" />
                     {/* Add more Picker.Item as needed */}
                 </Picker>
             </View>
@@ -339,14 +383,14 @@ const EditBlockScreen = ({ route, navigation }) => {
                 submitButtonText="Submit"
                 onConfirm={() => {
                     
-                    const { courses, program, year, semester, block } = this.state;
-                    if (!program || !year || !semester || !block || courses.length === 0) {
+                    const { courses, program, major, year, semester, block } = this.state;
+                    if (!program || !major || !year || !semester || !block || courses.length === 0) {
                         Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
                         return;
                     }
 
                     // Call the save function to handle saving the selected courses
-                    handleUpdate(blockDetails.program, blockDetails.year, blockDetails.semester, blockDetails.block, blockDetails.courses);
+                    handleUpdate(blockDetails.program, bloclDetails.major, blockDetails.year, blockDetails.semester, blockDetails.block, blockDetails.courses);
 
                     // Close the modal or perform any additional actions
                     setBlockDetails({ ...blockDetails, modalVisible: false });
@@ -372,7 +416,7 @@ const EditBlockScreen = ({ route, navigation }) => {
         paddingHorizontal: 10,
         }}>
         <TouchableOpacity onPress={handleUpdate}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+            <Text style={{ fontSize: RFValue(15), fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
             Update Course
             </Text>
         </TouchableOpacity>

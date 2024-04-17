@@ -16,6 +16,7 @@ export interface allScheduleItemModel{
 export interface scheduleModel{
   _id?: string,
   program?: string;
+  major?: string;
   year?: string;
   semester?: string;
   block?: string;

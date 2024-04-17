@@ -1,35 +1,124 @@
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, StyleSheet, Dimensions, Alert } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Image, ScrollView, StyleSheet, Dimensions, Alert, BackHandler } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
-import { readUserData } from '../../src/api/Users'; // Import readUserData function
+import { loginUserData } from '../../src/api/Users'; // Import readUserData function
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import Button from '../../components/Button';
 import COLORS from '../../constants/colors';
+import { useFocusEffect } from '@react-navigation/native'; 
 
 const Login = ({ navigation }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            const backAction = () => {
+                Alert.alert("Exit App", "Are you sure you want to exit?", [
+                    {
+                        text: "Cancel",
+                        onPress: () => null,
+                        style: "cancel"
+                    },
+                    { text: "YES", onPress: () => BackHandler.exitApp() }
+                ]);
+                return true;
+            };
+
+            const backHandler = BackHandler.addEventListener(
+                "hardwareBackPress",
+                backAction
+            );
+
+            return () => backHandler.remove();
+        }, [])
+    );
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            // Clear input fields when the component is focused
+            setUsername('');
+            setPassword('');
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    // useEffect(() => {
+    //     // Check if the user is already logged in
+    //     checkLoginStatus();
+
+    //     // Set up event listener for app state changes
+    //     const unsubscribe = navigation.addListener('beforeRemove', async () => {
+    //         // Clear login status from AsyncStorage when app is closed
+    //         const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+    //         if (isLoggedIn === 'true') {
+    //             await AsyncStorage.removeItem('isLoggedIn');
+    //         }
+    //     });
+
+    //     return unsubscribe;
+    // }, []);
+
+    // const checkLoginStatus = async () => {
+    //     try {
+    //         // Check if the user is logged in by retrieving the stored login status
+    //         const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
+            
+    //         if (isLoggedIn === 'true') {
+    //             // Navigate to Dashboard screen if user is already logged in
+    //             navigation.navigate('Dashboard');
+    //         }
+    //     } catch (error) {
+    //         console.error('Error checking login status:', error);
+    //     }
+    // };
 
     const handleLogin = async () => {
+        if (!username) {
+            Alert.alert('Missing Information', 'Please enter your username.');
+            return;
+        }
+    
+        if (!password) {
+            Alert.alert('Missing Information', 'Please enter your password.');
+            return;
+        }
+    
         try {
-            // Call API to read user data
-            const userData = await readUserData({ username, password });
+            const userData = await loginUserData({ username, password });
+            console.log('userData:', userData); // Log userData
 
             // Check if user data exists and if username and password match
             if (userData) {
-                // Navigate to Dashboard screen
-                navigation.navigate('Dashboard');
-            } else {
-                // Show error message for invalid credentials
-                Alert.alert('Invalid Credentials', 'Please enter valid username and password');
-            }
+                // Store login status to AsyncStorage
+                await AsyncStorage.setItem('isLoggedIn', 'true');
+
+                // Delay showing the alert by 500 milliseconds
+                setTimeout(() => {
+                    Alert.alert('Login', 'Login Successfully', [
+                        {
+                            text: 'OK',
+                            onPress: () => {
+                                // Navigate to Dashboard screen
+                                navigation.navigate('Dashboard');
+                            },
+                        },
+                    ]);
+                }, 500);
+        } else {
+            // Show error message for invalid credentials
+            Alert.alert('Invalid Credentials', 'Please enter valid username and password');
+        }
         } catch (error) {
-            console.error('Error during login:', error);
-            Alert.alert('Error', 'An error occurred during login. Please try again later.');
+            Alert.alert('Error', 'Invalid Credentials.');
         }
     };
+    
+    
 
     return (
         <ScrollView style={{ backgroundColor: '#E0F2F1' }}>
@@ -156,7 +245,10 @@ const Login = ({ navigation }) => {
                             <Button
                                 title="Login"
                                 filled
-                                onPress={() => navigation.navigate('Dashboard')}
+                                // onPress={handleLogin}
+                                onPress= {
+                                    // Navigate to Dashboard screen
+                                    navigation.navigate('Dashboard')}
                                 style={{
                                     marginTop: 18,
                                     marginBottom: 15,

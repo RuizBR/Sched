@@ -1,26 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Modal} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { readTeacher, updateTeacher } from '../../src/components/Teachers';
 import { readAllCourses, readCourse }  from '../../src/components/Courses';
+import { Teachers } from '../../src/index';
 import MultiSelect from 'react-native-multiple-select';
-import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 
 const EditTeacherScreen = ({ route, navigation }) => {
-  const { teacherId } = route.params;
+    const { teacherId } = route.params;
 
-  const [teacherDetails, setTeacherDetails] = useState({
-    firstName: '',
-    lastName: '',
-    specialized: [],
-    modalVisible: false,
-    allCourses: [],
-  });
+    const [teacherDetails, setTeacherDetails] = useState({
+        firstName: '',
+        lastName: '',
+        courses: [], // Ensure courses is initialized as an empty array
+        modalVisible: false,
+        allCourses: [],
+    });
 
-  const openCourseSelection = () => {
+    const openCourseSelection = () => {
         setTeacherDetails({ ...teacherDetails, modalVisible: true });
     };
+    
 
     useEffect(() => {
     const fetchData = async () => {
@@ -29,15 +32,17 @@ const EditTeacherScreen = ({ route, navigation }) => {
             const allCoursesData = await readAllCourses();
 
             if (teacherData && allCoursesData) {
-                const selectedSpecialized = teacherData.specialized.map(course => course._id); // Assuming courses contain _id field
+                const selectedCourses = teacherData.courses.map(course => course._id); // Assuming courses contain _id field
 
                 setTeacherDetails(prevState => ({
-                    ...prevState,
-                    firstName: teacherData.name || '',
-                    specialized: selectedSpecialized,
-                    modalVisible: false,
-                    allCourses: allCoursesData.allCourses || [],
-                }));
+                  ...prevState,
+                  firstName: teacherData.firstName,
+                  lastName: teacherData.lastName,
+                  courses: selectedCourses,
+                  modalVisible: false,
+                  allCourses: allCoursesData.allCourses || [], // Ensure allCoursesData.allCourses is not undefined
+              }));
+              
             }
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -49,28 +54,28 @@ const EditTeacherScreen = ({ route, navigation }) => {
 
 
     const handleUpdate = async () => {
-        const { firstName, lastName, specialized } = teacherDetails; // Access teacherDetails from state
-        const name = `${firstName} ${lastName}`;
+        const { firstName, lastName, courses } = teacherDetails; // Access teacherDetails from state
 
-        if (!teacherId || !lastName || !firstName || !Array.isArray(specialized) || specialized.length === 0) {
+        if (!teacherId || !firstName || !lastName || !Array.isArray(courses) || courses.length === 0) {
             Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
             return;
         }
 
     console.log('Updating Teacher Details...');
     console.log('Teacher ID:', teacherId);
-    console.log('Name:', name);
-    console.log('Courses:', specialized); // Check the structure of courses first
+    console.log('Firstname:', firstName);
+    console.log('Lastname:', lastName);
+    console.log('Courses:', courses); // Check the structure of courses first
 
     try {
         // Fetch course details based on their IDs
-        const courseDetailsPromises = specialized.map(courseId => readCourse(courseId)); 
+        const courseDetailsPromises = courses.map(courseId => readCourse(courseId)); 
         const courseDetails = await Promise.all(courseDetailsPromises);
 
         console.log('Fetched Course Details:', courseDetails);
 
-        // Map the fetched course details to include necessary properties for faculty update
-        const specializedForFaculty = courseDetails.map(course => ({
+        // Map the fetched course details to include necessary properties for teacher update
+        const coursesForTeacher = courseDetails.map(course => ({
             _id: course._id,
             code: course.code,
             description: course.description,
@@ -78,22 +83,23 @@ const EditTeacherScreen = ({ route, navigation }) => {
             type: course.type,
         }));
 
-        console.log('Courses for faculty:', specializedForFaculty);
+        console.log('Courses for Teacher:', coursesForTeacher);
 
-        // Update faculty details with the associated courses using the updateStudent function
-        await updateTeacher(teacherId, name, specializedForFaculty);
+        // Update teacher details with the associated courses using the updateStudent function
+        await updateTeacher(teacherId, firstName, lastName, coursesForTeacher);
 
         // Display success message or perform further actions
-        Alert.alert('Success', 'Faculty details updated successfully.');
+        Alert.alert('Success', 'Teacher details updated successfully.');
 
         // Further operations with courseDetails...
     } catch (error) {
-        Alert.alert('Error', 'Failed to update faculty. Please try again.');
-        console.error('Error updating faculty:', error);
+        Alert.alert('Error', 'Failed to update teacher. Please try again.');
+        console.error('Error updating teacher:', error);
     }
 };
 
-  return (
+    
+    return (
     <View style={{
         flex: 1,
         backgroundColor: COLORS.teal,
@@ -110,13 +116,13 @@ const EditTeacherScreen = ({ route, navigation }) => {
     }}>Edit Faculty Details
     </Text>
 
-{/* first name */}
-    <View style={{ marginBottom: 12 }}>
+{/* Firstname name */}
+<View style={{ marginBottom: 12 }}>
         <Text style={{
             fontSize: 16,
             fontWeight: 400,
             marginVertical: 8
-        }}>First name:</Text>
+        }}>First Name:</Text>
         <View style={{
             flexDirection: 'row',
             width: '90%',
@@ -133,41 +139,9 @@ const EditTeacherScreen = ({ route, navigation }) => {
                 paddingLeft: 22
             }}>
             <TextInput
-              value={teacherDetails.firstName}
-              onChangeText={(text) => setTeacherDetails({ ...teacherDetails, firstName: text })}
-              placeholder="First Name"
-            />
-            </View>
-        </View>
-    </View>
-
-{/* last name */}
-    <View style={{ marginBottom: 12 }}>
-        <Text style={{
-            fontSize: 16,
-            fontWeight: 400,
-            marginVertical: 8
-        }}>Last name:</Text>
-        <View style={{
-            flexDirection: 'row',
-            width: '90%',
-            backgroundColor: "#bce3e1",
-            borderRadius: 15,
-            alignItems: 'center',
-        }}>
-            <View style={{
-                backgroundColor: 'white',
-                width: "100%",
-                height: 48,
-                borderRadius: 15,
-                justifyContent: "center",
-                paddingLeft: 22
-            }}>
-      <TextInput
-        value={teacherDetails.lastName}
-        onChangeText={(text) => setTeacherDetails({ ...teacherDetails, lastName: text })}
-        placeholder="Last Name"
-      />
+                value={teacherDetails.firstName}
+                onChangeText={(text) => setTeacherDetails({ ...teacherDetails, firstName: text })}
+              />
             </View>
         </View>
     </View>
@@ -226,11 +200,11 @@ const EditTeacherScreen = ({ route, navigation }) => {
                     if (selectedItems !== null && selectedItems !== undefined) {
                         setTeacherDetails(prevState => ({
                             ...prevState,
-                            specialized: selectedItems,
+                            courses: selectedItems,
                         }));
                     }
                 }}
-                selectedItems={teacherDetails.specialized}
+                selectedItems={teacherDetails.courses}
                 selectText="Select Courses"
                 searchInputPlaceholderText="Search Courses..."
                 onChangeInput={text => console.log(text)}
@@ -246,14 +220,14 @@ const EditTeacherScreen = ({ route, navigation }) => {
                 submitButtonText="Submit"
                 onConfirm={() => {
                     
-                    const { specialized, firstName, lastName } = this.state;
-                    if (!firstName || !lastName || specialized.length === 0) {
+                    const { courses, firstName, lastName } = this.state;
+                    if (!firstName || !lastName || courses.length === 0) {
                         Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
                         return;
                     }
 
                     // Call the save function to handle saving the selected courses
-                    handleUpdate(teacherDetails.firstName, teacherDetails.lastName, teacherDetails.specialized);
+                    handleUpdate(teacherDetails.firstName, teacherDetails.lastName, teacherDetails.courses);
 
                     // Close the modal or perform any additional actions
                     setTeacherDetails({ ...teacherDetails, modalVisible: false });
@@ -261,32 +235,33 @@ const EditTeacherScreen = ({ route, navigation }) => {
 
             />
             <TouchableOpacity onPress={() => setTeacherDetails({ ...teacherDetails, modalVisible: false })}>
-                <Text style={{ color: COLORS.primary, fontSize: 18, alignSelf: 'flex-end' }}>Close</Text>
+                <Text style={{ color: COLORS.primary, fontSize: 18 }}>Close</Text>
             </TouchableOpacity>
         </View>
     </View>
     </Modal>
 
-{/* Course Update button */}
+{/* update button */}
     <View style={{
-      width: 150,
-      height: 50,
-      backgroundColor: '#728f9e',
-      borderRadius: 20,
-      marginRight: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingHorizontal: 10,
-    }}>
-      <TouchableOpacity onPress={handleUpdate}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
-          Update Faculty
-        </Text>
-      </TouchableOpacity>
+        width: 150,
+        height: 50,
+        backgroundColor: '#728f9e',
+        borderRadius: 20,
+        marginRight: 20,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        }}>
+        <TouchableOpacity onPress={handleUpdate}>
+            <Text style={{ fontSize: RFValue(15), fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+            Update Course
+            </Text>
+        </TouchableOpacity>
     </View>
 
     </View>
-  );
+      );
 };
+
 
 export default EditTeacherScreen;

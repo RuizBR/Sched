@@ -18,7 +18,11 @@ function StudentsList() {
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchStudents(); // Refresh rooms when screen comes into focus
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const fetchStudents = async () => {
     try {
@@ -55,7 +59,7 @@ function StudentsList() {
 
     Alert.alert(
       'Delete Items',
-      'Are you sure you want to delete the selected Room(s)?',
+      'Are you sure you want to delete the selected item(s)?',
       [
         {
           text: 'Cancel',
@@ -115,6 +119,10 @@ function StudentsList() {
   // // Navigate to the EditTeacherScreen with the blockId as a parameter
   // navigation.navigate('EditBlock', { blockId: itemId });
   // };
+  const handleSelectAll = () => {
+    const allItemIds = students.map((students) => students._id); // Corrected from room to rooms
+    setSelectedItems(allItemIds); // Mark all items as selected
+  };
 
   const renderSelectDeleteButtons = () => {
     return (
@@ -125,11 +133,14 @@ function StudentsList() {
           </TouchableOpacity>
         ) : (
           <>
+            <TouchableOpacity onPress={handleSelectAll}>
+              <Ionicons name="ios-checkbox" size={24} color="black" style={{ marginRight: 12 }} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleDeleteSelected}>
-              <Ionicons name="trash" size={20} color="black" style={{ marginRight: 15 }} />
+              <Ionicons name="trash" size={24} color="black" style={{ marginRight: 15 }} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleToggleSelection}>
-              <Ionicons name="ios-close-circle" size={20} color="black" style={{ marginRight: 10 }} />
+              <Ionicons name="ios-close-circle" size={24} color="black" style={{ marginRight: 10 }} />
             </TouchableOpacity>
           </>
         )}
@@ -230,13 +241,13 @@ function StudentsList() {
                 </View>
             </View>
 
-            {/* {isSelectionMode && (
+            {isSelectionMode && (
               <Ionicons
                 name={isSelected ? 'ios-checkbox' : 'ios-checkbox-outline'}
                 size={25}
                 color={isSelected ? COLORS.primary : 'grey'}
               />
-            )} */}
+            )}
           </TouchableOpacity>
       </View>
       </Swipeable>

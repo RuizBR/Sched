@@ -1,14 +1,16 @@
 
 import axios, { AxiosResponse } from 'axios';
-import { createData, readData, updateData, deleteData } from './endpoints/Users';
+import { createData, readData, updateData, deleteData, loginData } from './endpoints/Users';
 import { userModel, usersModel } from '../models/Users';
 
-const baseUrl = 'http://ec2-13-54-170-228.ap-southeast-2.compute.amazonaws.com:3000';
+const baseUrl = 'http://192.168.1.9:3000';
 
 const readDataURL = `${baseUrl}${readData}`;
 const createDataURL = `${baseUrl}${createData}`;
 const updateDataURL = `${baseUrl}${updateData}`;
 const deleteDataURL = `${baseUrl}${deleteData}`;
+const loginDataURL = `${baseUrl}${loginData}`;
+
 
 export const readAllUsersData = async (): Promise<AxiosResponse<usersModel> | any> => {
     const response: AxiosResponse<usersModel> = await axios.get(readDataURL);
@@ -75,3 +77,19 @@ export const deleteUserData = async (userData: userModel): Promise<AxiosResponse
         throw new Error(`Unexpected Status: ${response.status}`);
     }
 };
+
+export const loginUserData = async (userData: userModel): Promise<AxiosResponse<userModel> | any> => {
+    const username = userData.username
+    const password = userData.password
+
+    const url = `${loginDataURL}?username=${username}&password=${password}`
+    const response = await axios.get(url);
+
+    if (response.status === 200) {
+        return response.data;
+    } else if (response.status === 404) {
+        throw new Error(`No User Found`);
+    } else {
+        throw new Error(`Unexpected Status: ${response.status}`);
+    }
+}

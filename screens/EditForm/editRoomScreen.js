@@ -3,6 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { readRoom, updateRoom } from '../../src/components/Rooms';
 import COLORS from '../../constants/colors';
+import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+
 
 const EditRoomScreen = ({ route, navigation }) => {
   const { roomId } = route.params;
@@ -145,7 +147,7 @@ const EditRoomScreen = ({ route, navigation }) => {
       paddingHorizontal: 10,
     }}>
       <TouchableOpacity onPress={handleUpdate}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
+        <Text style={{ fontSize: RFValue(15), fontWeight: 'bold', color: 'white', textAlign: 'center' }}>
           Update Room
         </Text>
       </TouchableOpacity>

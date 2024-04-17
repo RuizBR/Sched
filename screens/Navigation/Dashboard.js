@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, StatusBar, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, StatusBar, Dimensions, Alert, BackHandler } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
@@ -8,6 +8,8 @@ import { readAllCoursesData } from '../../src/api/Courses';
 import { readAllTeachersData } from '../../src/api/Teachers';
 import { readAllRoomsData } from '../../src/api/Rooms';
 import { readAllStudentsData } from '../../src/api/Students';
+import { useFocusEffect } from '@react-navigation/native';
+
 
 const Dashboard = ({ navigation }) => {
   const [coursesCount, setCoursesCount] = useState(0);
@@ -20,6 +22,10 @@ const Dashboard = ({ navigation }) => {
   const [iconSize, setIconSize] = useState(0);
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
+  const [isDashboardFocused, setIsDashboardFocused] = useState(false);
+  const dayOfWeek = new Date().getDay();
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const greeting = `Have a Good ${days[dayOfWeek]}!`;
   
   useEffect(() => {
     const screenWidth = Dimensions.get('window').width;
@@ -37,6 +43,42 @@ const Dashboard = ({ navigation }) => {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const backAction = () => {
+      if (isDashboardFocused) {
+        Alert.alert("Exit Application?", "Do you want to exit the application?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel"
+          },
+          { text: "Yes", onPress: () => BackHandler.exitApp() }
+        ]);
+        return true;
+      }
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => backHandler.remove();
+  }, [isDashboardFocused]);
+
+  useEffect(() => {
+    const onFocus = navigation.addListener('focus', () => {
+      setIsDashboardFocused(true);
+    });
+
+    const onBlur = navigation.addListener('blur', () => {
+      setIsDashboardFocused(false);
+    });
+
+    return () => {
+      onFocus();
+      onBlur();
+    };
+  }, [navigation]);
+
 
   useEffect(() => {
     fetchTeachersCount();
@@ -110,6 +152,25 @@ const Dashboard = ({ navigation }) => {
     }
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const backAction = () => {
+        Alert.alert("Exit Application?", "Do you want to exit the application?", [
+          {
+            text: "Cancel",
+            onPress: () => null,
+            style: "cancel"
+          },
+          { text: "Yes", onPress: () => BackHandler.exitApp() }
+        ]);
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+      return () => backHandler.remove();
+    }, [])
+  );
 
   return (
     <ScrollView style={{ backgroundColor: '#E0F2F1' }}>
@@ -228,46 +289,45 @@ const Dashboard = ({ navigation }) => {
 
 {/* text/ space for hello */}   
     <View style={{ flexDirection: 'row' }}>
-      <View style={{
-          height: "80%",
-          width: "55%",
-          backgroundColor: '#c8e9e1',
-          borderRadius: 20,
-          padding: 10,
-          marginTop: 10,
-          // marginBottom: 40,
-          marginRight: 15
-        }}>
-        <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginLeft: 10 }}>
-          <Ionicons name="person-circle-outline" size={50} />
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Ionicons name="ellipse" size={10} color="green" style={{ marginRight: 5 }} />
-            <Text style={{
-              fontSize: 16,
-              fontWeight: 'bold',
-            }}>
-              {/* Online */}
-            </Text>
-          </View>
+    <View style={{
+      height: "80%",
+      width: "55%",
+      backgroundColor: '#c8e9e1',
+      borderRadius: 20,
+      padding: 10,
+      marginTop: 10,
+      marginRight: 15
+    }}>
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginLeft: 10 }}>
+        <Ionicons name="person-circle-outline" size={50} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Ionicons name="ellipse" size={10} color="green" style={{ marginRight: 5 }} />
+          <Text style={{
+            fontSize: 16,
+            fontWeight: 'bold',
+          }}>
+            {/* Online */}
+          </Text>
         </View>
-            <Text style={{
-              fontSize: RFValue(15),
-              fontWeight: 'bold',
-              padding: 3, // Add padding to create space within the border
-              marginLeft: 10,
-              marginBottom: -10
-            }}>
-            Hello{/* name of the user/ type of user logged */}!
-            </Text>
-            <Text style={{
-              fontSize: RFValue(13), // Set the font size for "WELCOME"
-              padding: 3, // Add padding to create space within the border
-              marginLeft: 10,
-              marginBottom: 25
-            }}>
-            Have a Good Day!
-            </Text>
       </View>
+      <Text style={{
+        fontSize: RFValue(15),
+        fontWeight: 'bold',
+        padding: 3,
+        marginLeft: 10,
+        marginBottom: -10
+      }}>
+        Hello {/* name of the user/ type of user logged */}!
+      </Text>
+      <Text style={{
+        fontSize: RFValue(13),
+        padding: 3,
+        marginLeft: 10,
+        marginBottom: 25
+      }}>
+        {greeting}
+      </Text>
+    </View>
 
       <View style={{
           height: "80%",
@@ -445,7 +505,6 @@ const Dashboard = ({ navigation }) => {
           height: windowHeight * 0.18,
           backgroundColor: 'dimgrey',
           borderRadius: 20,
-          marginBottom: 20,
           justifyContent: 'center',
           opacity: 0.9,
           overflow: 'hidden',
@@ -482,11 +541,11 @@ const Dashboard = ({ navigation }) => {
 
 {/* Another extra space */}
       <View style={{
-          height: 100,
-          backgroundColor: COLORS.teal,
+          height: 50,
+          backgroundColor: COLORS.primary,
           borderRadius: 15,
           padding: 10,
-          marginTop: 30
+          marginTop: 20
         }}>
         <Text style={{
           fontSize: 30, // Set the font size for "WELCOME"
@@ -496,6 +555,24 @@ const Dashboard = ({ navigation }) => {
         }}>
         </Text>
       </View>
+
+{/* Another extra space */}
+<View style={{
+          height: 100,
+          backgroundColor: COLORS.teal,
+          borderRadius: 15,
+          padding: 10,
+          marginTop: 20
+        }}>
+        <Text style={{
+          fontSize: 30, // Set the font size for "WELCOME"
+          fontWeight: 'bold',
+          padding: 3, // Add padding to create space within the border
+          marginLeft: 10, // Add margin to separate "WELCOME" from the rest of the text
+        }}>
+        </Text>
+      </View>
+
     </View>
     </View>
     </View>

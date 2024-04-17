@@ -18,7 +18,11 @@ function SubjectList() {
 
   useEffect(() => {
     fetchTeachers();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchTeachers(); // Refresh rooms when screen comes into focus
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const fetchTeachers = async () => {
     try {
@@ -112,10 +116,15 @@ function SubjectList() {
   };
 
   const handleEdit = (itemId) => {
-  // Navigate to the EditTeacherScreen with the teacherId as a parameter
-  navigation.navigate('EditFaculty', { teacherId: itemId });
+  // // Navigate to the EditTeacherScreen with the teacherId as a parameter
+  // navigation.navigate('EditFaculty', { teacherId: itemId });
   };
 
+  const handleSelectAll = () => {
+    const allItemIds = teachers.map((teachers) => teachers._id); // Corrected from room to rooms
+    setSelectedItems(allItemIds); // Mark all items as selected
+  };
+  
   const renderSelectDeleteButtons = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -125,11 +134,14 @@ function SubjectList() {
           </TouchableOpacity>
         ) : (
           <>
+            <TouchableOpacity onPress={handleSelectAll}>
+              <Ionicons name="ios-checkbox" size={24} color="black" style={{ marginRight: 12 }} />
+            </TouchableOpacity>
             <TouchableOpacity onPress={handleDeleteSelected}>
-              <Ionicons name="trash" size={20} color="black" style={{ marginRight: 15 }} />
+              <Ionicons name="trash" size={24} color="black" style={{ marginRight: 15 }} />
             </TouchableOpacity>
             <TouchableOpacity onPress={handleToggleSelection}>
-              <Ionicons name="ios-close-circle" size={20} color="black" style={{ marginRight: 10 }} />
+              <Ionicons name="ios-close-circle" size={24} color="black" style={{ marginRight: 10 }} />
             </TouchableOpacity>
           </>
         )}
@@ -146,22 +158,6 @@ function SubjectList() {
         maxWidth: 90,
         marginTop: 20,
       }}>
-
-{/* button for edit function */}
-        {/* <TouchableOpacity onPress={() => handleEdit(itemId)}>
-          <View style={{
-            color: 'white',
-            width: 90,
-            height: 80,
-            marginBottom: 10,
-            backgroundColor: 'black',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            <Ionicons name="ios-create" size={30} color="white" style={{ marginLeft: 40 }} />
-          </View>
-        </TouchableOpacity> */}
-{/* button for delete function */}
         <TouchableOpacity activeOpacity={1} onPress={() => handleDelete(itemId)}>
           <View style={{
             color: 'white',
@@ -187,7 +183,7 @@ function SubjectList() {
       if (isSelectionMode) {
         handleSelectItem(itemId); // Select item if in selection mode
       } else {
-        navigation.navigate('EditFaculty', { teacherId: itemId });
+        // navigation.navigate('EditFaculty', { teacherId: itemId });
       }
     };
 
@@ -224,23 +220,23 @@ function SubjectList() {
 
                   <View>
                       <Text style={{ fontSize: 20 }}>{item.name}</Text>
-                      <Text style={{ fontSize: 14, color: 'gray' }}>
+                      {/* <Text style={{ fontSize: 14, color: 'gray' }}>
                         {item.specialized &&
                           `Specialized: ${item.specialized
                             .map((course) => course.description)
                             .join(', ')}`}
-                      </Text>
+                      </Text> */}
                   </View>
             </View>
 
-            {/* {isSelectionMode && (
+            {isSelectionMode && (
               <Ionicons
                 name={isSelected ? 'ios-checkbox' : 'ios-checkbox-outline'}
                 size={25}
                 color={isSelected ? COLORS.primary : 'grey'}
                 style={{ marginRight: 20 }}
               />
-            )} */}
+            )}
         </TouchableOpacity>
 
       </View>

@@ -2,7 +2,7 @@
   "expo": {
     "name": "SchedulingApp",
     "slug": "schedulingapp",
-    "version": "2.0.6",
+    "version": "3.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -24,7 +24,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.scheduling.ccs",
-      "versionCode": 3
+      "versionCode": 6
     },
     "web": {
       "favicon": "./assets/favicon.png"

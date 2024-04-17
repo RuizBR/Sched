@@ -30,11 +30,19 @@ class AddRoom extends Component {
         try {
             // Call the createRoom method from the Rooms object
             await room.create(name, type); // Include type in the create method
-            Alert.alert(
-                'Room created successfully!',
-                `Room Details:\nName: ${name}\nType: ${type}`,
-                [{ text: 'OK' }]
-            );
+            setTimeout(() => {
+                Alert.alert(
+                    'Room created successfully!',
+                    `Room Details:\nName: ${name}\nType: ${type}`,[
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            // Navigate to Dashboard screen
+                            this.props.navigation.navigate('Rooms');
+                        },
+                    }]
+                );
+            }, 500);
         } catch (error) {
             Alert.alert('Error', 'Failed to save room. Please try again.', [{ text: 'OK' }]);
         }
@@ -171,7 +179,7 @@ render() {
             </View>
 
 {/* Rooms List view */}
-        <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%' }}>
+        {/* <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%' }}>
             <TouchableOpacity style={{
                 marginRight: 20,
                 alignItems: 'center',
@@ -182,7 +190,7 @@ render() {
                     View All Rooms
                 </Text>
             </TouchableOpacity>
-        </View>
+        </View> */}
         </View>
         );
     }

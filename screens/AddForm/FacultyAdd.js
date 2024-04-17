@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, Modal } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Modal, ScrollView } from 'react-native';
 import { readAllCourses, readCourse } from '../../src/components/Courses';
 import { Ionicons } from '@expo/vector-icons';
 import { Teachers } from '../../src/index';
@@ -78,18 +78,25 @@ class FacultyAdd extends Component {
         await teacher.create(name, coursesForFaculty);
 
         // Display a success message with faculty details
-        Alert.alert(
-            'Created successfully!',
-            `Faculty Details:\nName: ${name}\nSpecialization: ${coursesForFaculty.map(course => course.code).join(', ')}`,
-            [{ text: 'OK' }]
-        );
-
-        this.clearInputs(); // Reset inputs after successful save
-    } catch (error) {
-        Alert.alert('Error', 'Failed to create faculty. Please try again.');
-        console.error('Error creating faculty:', error);
-    }
-};
+        setTimeout(() => {
+            Alert.alert(
+                'Created successfully!',
+                `Faculty Details:\nName: ${name}\nSpecialization: ${coursesForFaculty.map(course => course.code).join(', ')}`,[
+                {
+                    text: 'OK',
+                    onPress: () => {
+                        // Navigate to Dashboard screen
+                        this.props.navigation.navigate('FacultyList');
+                    },
+                },]
+            );
+        }, 500);
+            this.clearInputs(); // Reset inputs after successful save
+        } catch (error) {
+            Alert.alert('Error', 'Failed to create faculty. Please try again.');
+            console.error('Error creating faculty:', error);
+        }
+    };
 
 
 
@@ -219,13 +226,13 @@ class FacultyAdd extends Component {
         this.setState({ modalVisible: false });
     }}
 >
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
         <View style={{ 
             backgroundColor: 'white', 
             padding: 20, 
             borderRadius: 10, 
-            width: '90%', 
-            maxHeight: '90%', 
+            width: '95%', // Adjust the width here
+            maxHeight: '80%', // Adjust the height here
             shadowColor: '#000',
             shadowOffset: {
                 width: -10,
@@ -234,77 +241,85 @@ class FacultyAdd extends Component {
             shadowOpacity: 1,
             shadowRadius: 10,
             elevation: 7, 
-        }}>
+            }}>
             <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Select Courses</Text>
-            <MultiSelect
-                items={this.state.allCourses && this.state.allCourses.allCourses ? this.state.allCourses.allCourses.map(course => ({
-                    _id: course._id,
-                    code: course.code,
-                    description: course.description,
-                    units: course.units,
-                    type: course.type,
-                    displayText: `${course.description}`
-                })) : []}
-                uniqueKey="_id"
-                onSelectedItemsChange={selectedItems => {
-                    // Ensure selectedItems is not null or undefined
-                    if (selectedItems !== null && selectedItems !== undefined) {
-                        this.setState({ specialized: selectedItems });
-                    }
-                }}
-                selectedItems={this.state.specialized}
-                selectText="Select Courses"
-                searchInputPlaceholderText="Search Courses..."
-                onChangeInput={text => console.log(text)}
-                tagContainerStyle={{
-                    paddingVertical: 5,
-                    paddingHorizontal: 10,
-                    marginRight: 10,
-                    borderRadius: 20,
-                    width: '95%'
-                }}
-                tagTextStyle={{
-                    color: 'white',
-                    fontSize: 10,
-                    paddingHorizontal: 5,
-                }}
-                tagRemoveIconColor={COLORS.primary}
-                tagBorderColor={COLORS.primary}
-                tagTextColor={COLORS.primary}
-                selectedItemTextColor={COLORS.primary}
-                selectedItemIconColor={COLORS.primary}
-                itemTextColor="#000"
-                displayKey="displayText"
-                searchInputStyle={{ color: COLORS.primary }}
-                submitButtonColor={COLORS.primary}
-                submitButtonText="Submit"
-                onConfirm={() => {
-                    
-                    const { firstName, lastName, specialized } = this.state;
-                    if (!firstName || !lastName || specialized.length === 0) {
-                        Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
-                        return;
-                    }
+            {/* Wrap MultiSelect with ScrollView */}
+            <ScrollView style={{ maxHeight: 400 }}> 
+                <MultiSelect
+                    items={this.state.allCourses && this.state.allCourses.allCourses ? this.state.allCourses.allCourses.map(course => ({
+                        _id: course._id,
+                        code: course.code,
+                        description: course.description,
+                        units: course.units,
+                        type: course.type,
+                        displayText: `${course.description}`
+                    })) : []}
+                    uniqueKey="_id"
+                    onSelectedItemsChange={selectedItems => {
+                        // Limit the selected items to a maximum of 4 
+                        let limitedSelectedItems = selectedItems;
+                        if (limitedSelectedItems.length > 4) {
+                            limitedSelectedItems = limitedSelectedItems.slice(0, 4);
+                        }
+                        this.setState({ specialized: limitedSelectedItems });
+                    }}
+                    selectedItems={this.state.specialized}
+                    selectText="Select Courses"
+                    searchInputPlaceholderText="Search Courses..."
+                    onChangeInput={text => console.log(text)}
+                    tagContainerStyle={{
+                        paddingVertical: 5,
+                        paddingHorizontal: 10,
+                        marginRight: 10,
+                        borderRadius: 20,
+                        width: '95%'
+                    }}
+                    tagTextStyle={{
+                        color: 'white',
+                        fontSize: 10,
+                        paddingHorizontal: 5,
+                    }}
+                    tagRemoveIconColor={COLORS.primary}
+                    tagBorderColor={COLORS.primary}
+                    tagTextColor={COLORS.primary}
+                    selectedItemTextColor={COLORS.primary}
+                    selectedItemIconColor={COLORS.primary}
+                    itemTextColor="#000"
+                    displayKey="displayText"
+                    searchInputStyle={{ color: COLORS.primary }}
+                    submitButtonColor={COLORS.primary}
+                    submitButtonText="Submit"
+                    onConfirm={() => {
+                        
+                        const { firstName, lastName, specialized } = this.state;
+                        if (!firstName || !lastName || specialized.length === 0) {
+                            Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
+                            return;
+                        }
 
-                    // Call the save function to handle saving the selected courses
-                    this.save(this.state.firstName, this.state.lastName, this.state.specialized);
-                    
-                    // Close the modal or perform any additional actions
-                    this.setState({ modalVisible: false });
-                }}
-            />
+                        // Call the save function to handle saving the selected courses
+                        this.save(this.state.firstName, this.state.lastName, this.state.specialized);
+                        
+                        // Close the modal or perform any additional actions
+                        this.setState({ modalVisible: false });
+                    }}
+                />
+            </ScrollView>
+            {/* End of ScrollView */}
+            
             <TouchableOpacity
                 onPress={() => {
                     this.setState({ modalVisible: false });
                     // Any additional actions when closing the modal
                 }}
-                style={{ marginTop: 20, alignSelf: 'flex-end' }}
+                style={{ marginTop: 20, alignSelf: 'center' }}
             >
-                <Text style={{ color: COLORS.primary, fontSize: 18 }}>Close</Text>
+                <Text style={{ color: COLORS.primary, fontSize: 20, textAlign: 'center' }}>Close</Text>
             </TouchableOpacity>
         </View>
     </View>
-</Modal>
+    </Modal>
+
 
 
             <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 20 }}>
@@ -345,7 +360,7 @@ class FacultyAdd extends Component {
             </TouchableOpacity>
             </View>
 
-            <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%'}}>
+            {/* <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%'}}>
             <TouchableOpacity style={{
                 marginRight: 20,
                 alignItems: 'center',
@@ -357,7 +372,7 @@ class FacultyAdd extends Component {
                 >Faculty List
                 </Text>
             </TouchableOpacity>
-            </View>
+            </View> */}
 
             </View>
         );

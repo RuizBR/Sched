@@ -10,6 +10,7 @@ export const readAllStudents = async (): Promise<{ allStudents: Array<studentsMo
       const allStudents: studentsModel[] = response.students.map((student: studentModel) => ({
         _id: student._id,
         program: student.program,
+        major: student.major,
         year: student.year,
         semester: student.semester,
         block: student.block,
@@ -35,12 +36,13 @@ export const readStudent = async (getID: string): Promise<studentModel | any> =>
 
     const _id = response._id;
     const program = response.program;
+    const major = response.major;
     const year = response.year; //response.student.year
     const semester = response.semester;
     const block = response.block;
     const courses = response.courses;
 
-    return { _id, program, year, semester, block, courses };
+    return { _id, program, major, year, semester, block, courses };
     
 
 
@@ -51,12 +53,14 @@ export const readStudent = async (getID: string): Promise<studentModel | any> =>
 
 export const createStudent = async (
   getProgram: string, 
+  getMajor: string,
   getYear: string, 
   getSemester: string, 
   getBlock: string, 
   getCourses: any) => {
   const newStudent: studentModel = {
     program: getProgram,
+    major: getMajor,
     year: getYear,
     semester: getSemester,
     block: getBlock,
@@ -67,27 +71,29 @@ export const createStudent = async (
     console.log(`Student created successfully:`, response.student);
     return response.student;
   } catch (error: any) {
-    console.error(`Failed to create student: ${error.message}`);
+    console.error(`Failed to delete student: ${error.message}`);
   }
 };
 
 export const updateStudent = async (
   getID: string, 
   getProgram: string, 
+  getMajor: string,
   getYear: string, 
-  getSemester: 
-  string, 
+  getSemester: string, 
   getBlock: string, 
   getCourses: any) => {
   const newStudent: studentModel = {
     _id: getID,
     program: getProgram,
+    major: getMajor,
     year: getYear,
     semester: getSemester,
     block: getBlock,
     courses: getCourses
   };
   try {
+    
     const response = await updateStudentData(newStudent);
     console.log(`Student update successfully:`, response.students);
     return response.students;

@@ -59,10 +59,10 @@ export const createTeacher = async (
   }
 };
 
-export const updateTeacher = async (getID: string, getName: string, getSpecialized: any) => {
+export const updateTeacher = async (getID: string, getFirstName: string, getLastName: string, getSpecialized: any) => {
   const newTeacher: teacherModel = {
     _id: getID,
-    name: getName,
+    name: `${getFirstName} ${getLastName}`,
     specialized: getSpecialized
   };
   try {

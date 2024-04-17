@@ -1,4 +1,4 @@
-import { readUserData, createUserData, updateUserData, deleteUserData, readAllUsersData } from '../api/Users';
+import { readUserData, createUserData, updateUserData, deleteUserData, readAllUsersData, loginUserData } from '../api/Users';
 import { userModel, usersModel } from '../models/Users';
 
 
@@ -83,5 +83,23 @@ export const deleteUser = async (getID: string) => {
 
   } catch (error: any) {
     console.error(`Failed to delete user: ${error.message}`);
+  }
+};
+
+export const loginUser = async (u: string, p: string): Promise<usersModel | any> => {
+  try {
+    const user: userModel = { username: u, password: p };
+    const response: usersModel = await loginUserData(user);
+
+    const _id = response.user._id;
+    const username = response.user.username;
+    const password = response.user.password;
+
+    return { _id, username, password };
+    
+
+
+  } catch (error: any) {
+    console.error(`Failed to read user: ${error.message}`);
   }
 };

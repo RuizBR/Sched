@@ -4,7 +4,6 @@ import { Picker } from '@react-native-picker/picker';
 import { Courses } from '../../src/index'
 import COLORS from '../../constants/colors';
 
-
 class SubjectAdd extends Component{
     state = {
         code: '',
@@ -35,44 +34,55 @@ class SubjectAdd extends Component{
         this.setState({ type: text })
     }
     save = async () => {
-    const { code, description, units, type } = this.state;
-
-// Check if any required field is empty and handle each case separately
+        const { code, description, units, type } = this.state;
+    
+        // Check if any required field is empty and handle each case separately
         if (!code) {
-            Alert.alert('Input failed', 'Please enter a  course code.', [{ text: 'OK' }]);
+            Alert.alert('Input failed', 'Please enter a course code.', [{ text: 'OK' }]);
             return;
         }
-
+    
         if (!description) {
-            Alert.alert('Input failed', 'Please enter a  course description.', [{ text: 'OK' }]);
+            Alert.alert('Input failed', 'Please enter a course description.', [{ text: 'OK' }]);
             return;
         }
-
+    
         if (!units) {
             Alert.alert('Input failed', 'Please enter the number of units.', [{ text: 'OK' }]);
             return;
         }
-
+    
         if (!type) {
             Alert.alert('Input failed', 'Please select a type.', [{ text: 'OK' }]);
             return;
         }
-
+    
         const courses = new Courses();
-            
+        
         try {
             const create = await courses.create(code, description, units, type);
-            Alert.alert(
-                'Course created successfully!',
-                `Course Details:\nCode: ${code}\nDescription: ${description}\nUnits: ${units}\nType: ${type}`,
-                [{ text: 'OK' }]
-            );
+            
+            setTimeout(() => {
+                Alert.alert(
+                    'Course created successfully!',
+                    `Course Details:\nCode: ${code}\nDescription: ${description}\nUnits: ${units}\nType: ${type}`, [
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            // Navigate to Dashboard screen
+                            this.props.navigation.navigate('SubjectList');
+                        },
+                    },
+                ]);
                 this.clearInputs();
+            }, 500);
+            this.clearInputs(); // Reset inputs after successful save
         } catch (error) {
-            Alert.alert('Error', 'Failed to save course. Please try again.', [{ text: 'OK' }]);
+            Alert.alert('Error', 'Failed to create subject. Please try again.');
+            console.error('Error creating subject:', error);
         }
     };
-
+    
     render() { 
     const { navigation } = this.props;
 
@@ -276,7 +286,7 @@ class SubjectAdd extends Component{
     </View>
 
 {/* View Course List */}
-    <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%'}}>
+    {/* <View style={{ justifyContent: 'center', marginTop: 20, position: 'absolute', bottom: 20, width: '100%'}}>
     <TouchableOpacity style={{
         marginRight: 20,
         alignItems: 'center',
@@ -288,7 +298,7 @@ class SubjectAdd extends Component{
         >Course List
         </Text>
     </TouchableOpacity>
-    </View>
+    </View> */}
 
     </View>
   );

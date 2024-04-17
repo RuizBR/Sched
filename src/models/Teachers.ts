@@ -6,14 +6,15 @@ export interface teacherCourseModel{
     type?: string;
   }
 
-export interface teacherCoursesModel{
-    specialized?: teacherCourseModel
+  export interface teacherCoursesModel {
+    specialized?: teacherCourseModel[];
   }
+  
 
 export interface teacherModel {
   _id?: string;
   name?: string;
-  specialized?: teacherCourseModel;
+  specialized?: teacherCourseModel[];
 }
 export interface teachersModel {
   teacher?: teacherModel;
