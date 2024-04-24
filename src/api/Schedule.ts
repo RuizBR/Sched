@@ -1,9 +1,8 @@
-
 import axios, { AxiosResponse } from 'axios';
 import { deleteAllData, readData, readSchedData } from './endpoints/Schedule';
 import { allScheduleModel, optionsModel as optionModel, optionsModel, scheduleItemModel, scheduleModel } from '../models/Schedule';
 
-const baseUrl = 'http://192.168.1.9:3000';
+const baseUrl = 'http://ec2-3-27-173-249.ap-southeast-2.compute.amazonaws.com:3000';
 
 const readDataURL = `${baseUrl}${readData}`;
 const deleteAllDataURL = `${baseUrl}${deleteAllData}`;

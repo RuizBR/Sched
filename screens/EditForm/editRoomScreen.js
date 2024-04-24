@@ -48,7 +48,7 @@ const EditRoomScreen = ({ route, navigation }) => {
           [{ text: 'OK', onPress: () => navigation.goBack() }]
         );
       } else {
-        console.error('Failed to update course');
+        console.error('Failed to update room');
       }
     } catch (error) {
       console.error('Error updating course:', error);

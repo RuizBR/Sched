@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from 'axios';
 import { createData, readData, updateData, deleteData, addCourseData } from './endpoints/Teachers';
 import { teacherCourseModel, teacherCoursesModel, teacherModel, teachersModel } from '../models/Teachers';
 
-const baseUrl = 'http://192.168.1.9:3000';
+const baseUrl = 'http://ec2-3-27-173-249.ap-southeast-2.compute.amazonaws.com:3000';
 
 const readDataURL = `${baseUrl}${readData}`;
 const createDataURL = `${baseUrl}${createData}`;
@@ -146,7 +146,7 @@ export const deleteCourseData = async (teacherData: teacherModel, courseData: te
     const response: AxiosResponse<teacherCoursesModel> = await axios.delete(url);
     
     if (response.status === 200) {
-        return response.data;
+        return response.data.specialized;
         
     } else if (response.status === 404) {
         throw new Error(`No Student Found`);

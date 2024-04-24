@@ -4,8 +4,10 @@ import COLORS from '../../constants/colors';
 import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 import { Ionicons } from '@expo/vector-icons';
 import Signup from '../Starting/Signup';
+import Swiper from 'react-native-swiper';
 
 const Personalization = ({ navigation }) => {
+    const [isManualVisible, setIsManualVisible] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isContactModalVisible, setIsContactModalVisible] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -37,6 +39,9 @@ const Personalization = ({ navigation }) => {
         setIconSize(calculatedSize);
       }, []);
 
+    const toggleManual = () => {
+        setIsManualVisible(!isManualVisible);
+    };
     const toggleModal = () => {
         setIsModalVisible(!isModalVisible);
     };
@@ -76,28 +81,6 @@ const Personalization = ({ navigation }) => {
             />
             
     </View>
-{/*     
-        <Text style={{ fontSize: RFValue(15), fontWeight: "bold", marginBottom: 30 }}>
-                    ADMINISTRATOR
-        </Text> */}
-           
-
-        {/* <TouchableOpacity 
-        onPress={toggleContactModal}
-        style={{
-                width: "100%",
-                height: windowHeight * 0.07,
-                alignItems: 'center',
-                backgroundColor: "#ccc",
-                padding: 10,
-                borderRadius: 20,
-                flexDirection: 'row',
-                marginBottom: 10
-            }}>
-                <Ionicons name="key" size={iconSize} color="black" style={{ marginLeft: 20 }} />
-                <Text style={{ fontSize: RFValue(13), fontWeight: 'bold', color: 'black', marginLeft: 15 }}>Change Password</Text>
-                <Ionicons name="ios-caret-forward" size={25} color="black" style={{ position: 'absolute', right: 40 }} />
-        </TouchableOpacity> */}
 
             {/* Modals */}
             <Modal
@@ -154,7 +137,7 @@ const Personalization = ({ navigation }) => {
                 </KeyboardAvoidingView>
             </Modal>
 
-    <TouchableOpacity style={{
+    <TouchableOpacity onPress={toggleManual} style={{
         width: "100%",
         height: windowHeight * 0.07,
         alignItems: 'center',
@@ -234,6 +217,66 @@ const Personalization = ({ navigation }) => {
                 </View>
             </Modal>
     </View>
+
+    <Modal
+          animationType="fade"
+          transparent={true}
+          visible={isManualVisible}
+          onRequestClose={() => {
+            setIsManualVisible(!isManualVisible);
+            }}
+        >
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <View
+              style={{
+                margin: 20,
+                width: '80%',
+                height: '70%',
+                backgroundColor: 'white',
+                borderRadius: 25,
+                padding: 35,
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
+                position: 'relative', // Add this line
+              }}
+            >
+              <Swiper style={{ height: '90%' }} showsButtons={false} autoplay={true}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <Image
+                    source={require('schedulingapp/assets/SS1.png')}
+                    style={{ width: "100%", height: "90%", flex: 1, resizeMode: 'contain' }}
+                  />
+                </View>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <Image
+                    source={require('schedulingapp/assets/SS2.png')}
+                    style={{ width: "100%", height: "90%", flex: 1, resizeMode: 'contain' }}
+                  />
+                </View>
+              </Swiper>
+              <Text style={{ marginTop: 15, textAlign: 'center' }}>Adaptive Scheduling System for CCS</Text>
+              <TouchableOpacity style={{ backgroundColor: "#b2ccc5", borderRadius: 20, padding: 10, marginTop: 20}} onPress={() => {
+            setIsManualVisible(!isManualVisible);
+            }}>
+              <Ionicons name="close" size={20} color="black"/>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
 {/* Button to open contact modal */}
     <TouchableOpacity
@@ -347,7 +390,7 @@ const Personalization = ({ navigation }) => {
                             <Text style={{ fontSize: 15 }}>
                                 <Text style={{ fontWeight: 'bold', marginLeft: 30 }}>Jhamaica Virrey </Text>
                             </Text>
-                        </View>
+                        </View>  
 
                         <View style={{ justifyContent: 'center' }}>
                             <TouchableOpacity onPress={() => toggleDetailsVisibility('arrowMaica')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

@@ -78,6 +78,7 @@ const Schedule = ({ navigation }) => {
                     <th>Description</th>
                     <th>Day</th>
                     <th>Time</th>
+                    <th>Room</th>
                     <th>Instructor</th>
                   </tr>
                 </thead>
@@ -91,6 +92,7 @@ const Schedule = ({ navigation }) => {
                 <td>${sched.courseDescription}</td>
                 <td>${sched.day}</td>
                 <td>${sched.time}</td>
+                <td>${sched.room}</td>
                 <td>${sched.instructor}</td>
               </tr>
             `;
@@ -224,7 +226,7 @@ const Schedule = ({ navigation }) => {
               flexDirection: 'row', // Use row direction to place content and logo side by side
               alignItems: 'center', // Vertically center the content and logo
               height: windowHeight * 0.12,
-              backgroundColor: COLORS.secondary,
+              backgroundColor: '#c8e3e0',
               borderRadius: 15,
               padding: 20,
               marginTop: 15,
@@ -274,14 +276,14 @@ const Schedule = ({ navigation }) => {
     style={{
       width: '45%',
       height: 60,
-      backgroundColor: COLORS.primary,
+      backgroundColor: "#9dc8ba",
       borderRadius: 15,
       alignItems: 'center',
       justifyContent: 'center',
       paddingHorizontal: 10,
     }}
   >
-    <Text style={{ fontSize: RFValue(17), color: 'white', textAlign: 'center' }}>
+    <Text style={{ fontSize: RFValue(17), color: 'black', textAlign: 'center' }}>
       Delete All Schedule
     </Text>
   </TouchableOpacity>

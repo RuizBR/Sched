@@ -7,9 +7,10 @@ export const readAllTeachers = async (): Promise<{ allTeachers: Array<teachersMo
     const response = await readAllTeachersData();
 
     if (Array.isArray(response.teachers)) {
-      const allTeachers: teachersModel[]= response.teachers.map((teacher: teacherModel) => ({
+      const allTeachers = response.teachers.map((teacher: teacherModel) => ({
         _id: teacher._id,
-        name: teacher.name,
+        fname: teacher.fname,
+        sname: teacher.sname,
         specialized: teacher.specialized
       }));
 
@@ -25,16 +26,17 @@ export const readAllTeachers = async (): Promise<{ allTeachers: Array<teachersMo
   }
 }
 
-export const readTeacher = async (getID: string): Promise<teacherModel | any> => {
+export const readTeacher = async (getID: string): Promise<teachersModel | any> => {
   try {
     const teacher: teacherModel = { _id: getID };
-    const response: teacherModel = await readTeacherData(teacher);
+    const response: teachersModel = await readTeacherData(teacher);
 
-    const _id = response._id;
-    const name = response.name;
-    const specialized = response.specialized;
+    const _id = response.teacher._id;
+    const fname = response.teacher.fname;
+    const sname = response.teacher.sname;
+    const specialized = response.teacher.specialized;
 
-    return { _id, name, specialized };
+    return { _id, fname, sname, specialized };
     
 
 
@@ -43,11 +45,10 @@ export const readTeacher = async (getID: string): Promise<teacherModel | any> =>
   }
 };
 
-export const createTeacher = async (
-  getName: string, 
-  getSpecialized: any) => {
+export const createTeacher = async (getFname: string, getSname: string, getSpecialized: any) => {
   const newTeacher: teacherModel = {
-    name: getName,
+    fname: getFname,
+    sname: getSname,
     specialized: getSpecialized,
   };
   try {
@@ -55,14 +56,15 @@ export const createTeacher = async (
     console.log(`Teacher created successfully:`, response);
     return response.teacher;
   } catch (error: any) {
-    console.error(`Failed to create teacher: ${error.message}`);
+    console.error(`Failed to delete teacher: ${error.message}`);
   }
 };
 
-export const updateTeacher = async (getID: string, getFirstName: string, getLastName: string, getSpecialized: any) => {
+export const updateTeacher = async (getID: string, getFname: string, getSname: string, getSpecialized: any) => {
   const newTeacher: teacherModel = {
     _id: getID,
-    name: `${getFirstName} ${getLastName}`,
+    fname: getFname,
+    sname: getSname,
     specialized: getSpecialized
   };
   try {

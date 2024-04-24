@@ -1,4 +1,6 @@
-import { deleteAll, readOptions, readAllPrograms, readProgram, readAllSched, readSched} from '../api/Schedule';
+import { 
+  deleteAll, readOptions, readAllPrograms, readProgram, readAllSched, readSched
+} from '../api/Schedule';
 import { scheduleModel, scheduleItemModel, optionsModel, optionModel, allScheduleModel } from '../models/Schedule';
 
 export const deleteAllOptions = async (): Promise<Array<optionModel> | any> => {
@@ -43,9 +45,9 @@ export const readAllProgram = async (getID: string): Promise<{ allSchedules: Arr
       const allSchedules: scheduleModel[] = response.schedule.programs.map((program: scheduleModel) => ({
         _id: program._id,
         program: program.program,
-        major: program.major, // This should work if 'major' exists in the original data
         year: program.year,
         semester: program.semester,
+        major: program.major,
         block: program.block,
         sched: program.sched
       }));
@@ -59,7 +61,6 @@ export const readAllProgram = async (getID: string): Promise<{ allSchedules: Arr
   }
 };
 
-
 export const readSingleProgram = async (getID: string, getProgramID: string ): Promise<scheduleModel | any> => {
   try {
     const scheduleid: scheduleModel = { _id: getID };
@@ -68,13 +69,13 @@ export const readSingleProgram = async (getID: string, getProgramID: string ): P
 
     const _id = response._id;
     const program = response.program;
-    const major = response.major;
     const year = response.year; //response.schedule.year
     const semester = response.semester;
+    const major = response.major;
     const block = response.block;
     const sched = response.sched;
 
-    return { _id, program, major, year, semester, block, sched };
+    return { _id, program, year, semester, major, block, sched };
 
   } catch (error: any) {
     console.error(`Failed to read schedule: ${error.message}`);

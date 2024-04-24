@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Image, ScrollView, StyleSheet, Dimensions, Alert, BackHandler } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
-import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
+import { RFValue } from "react-native-responsive-fontsize";
 import { loginUserData } from '../../src/api/Users'; // Import readUserData function
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import Button from '../../components/Button';
@@ -245,10 +245,10 @@ const Login = ({ navigation }) => {
                             <Button
                                 title="Login"
                                 filled
-                                // onPress={handleLogin}
-                                onPress= {
-                                    // Navigate to Dashboard screen
-                                    navigation.navigate('Dashboard')}
+                                onPress={handleLogin}
+                                // onPress= {
+                                //     // Navigate to Dashboard screen
+                                //     navigation.navigate('Dashboard')}
                                 style={{
                                     marginTop: 18,
                                     marginBottom: 15,

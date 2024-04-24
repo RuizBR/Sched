@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, StatusBar, Dimensions, Alert, BackHandler } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, StatusBar, Dimensions, Alert, BackHandler, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../../constants/colors';
@@ -9,6 +9,8 @@ import { readAllTeachersData } from '../../src/api/Teachers';
 import { readAllRoomsData } from '../../src/api/Rooms';
 import { readAllStudentsData } from '../../src/api/Students';
 import { useFocusEffect } from '@react-navigation/native';
+import Swiper from 'react-native-swiper';
+
 
 
 const Dashboard = ({ navigation }) => {
@@ -26,6 +28,12 @@ const Dashboard = ({ navigation }) => {
   const dayOfWeek = new Date().getDay();
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const greeting = `Have a Good ${days[dayOfWeek]}!`;
+  const [modalVisible, setModalVisible] = useState(true); // State variable for modal visibility
+
+  // Function to hide the modal
+  const hideModal = () => {
+    setModalVisible(false);
+  };
   
   useEffect(() => {
     const screenWidth = Dimensions.get('window').width;
@@ -177,6 +185,63 @@ const Dashboard = ({ navigation }) => {
     <StatusBar backgroundColor={COLORS.teal} barStyle="dark-content" />
     <View style={{ flex: 1 }}>
       <View style={{ flex: 1, padding: 20, backgroundColor: COLORS.teal }}>
+      <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={hideModal}
+        >
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0, 0, 0, 0.3)',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <View
+              style={{
+                margin: 20,
+                width: '80%',
+                height: '70%',
+                backgroundColor: 'white',
+                borderRadius: 25,
+                padding: 35,
+                alignItems: 'center',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 2,
+                },
+                shadowOpacity: 0.25,
+                shadowRadius: 4,
+                elevation: 5,
+                position: 'relative', // Add this line
+              }}
+            >
+              <Swiper style={{ height: '90%' }} showsButtons={false} autoplay={true}>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <Image
+                    source={require('schedulingapp/assets/SS1.png')}
+                    style={{ width: "100%", height: "90%", flex: 1, resizeMode: 'contain' }}
+                  />
+                </View>
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  <Image
+                    source={require('schedulingapp/assets/SS2.png')}
+                    style={{ width: "100%", height: "90%", flex: 1, resizeMode: 'contain' }}
+                  />
+                </View>
+              </Swiper>
+              <Text style={{ marginTop: 15, textAlign: 'center' }}>Adaptive Scheduling System for CCS</Text>
+              <TouchableOpacity style={{ backgroundColor: "#b2ccc5", borderRadius: 20, padding: 10, marginTop: 20}} onPress={hideModal}>
+              <Ionicons name="close" size={20} color="black"/>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+
 
 {/* Welcome & System name*/}
       <View style={{ flex: 1 }}>
@@ -329,17 +394,31 @@ const Dashboard = ({ navigation }) => {
       </Text>
     </View>
 
-      <View style={{
-          height: "80%",
-          width: "40%",
-          backgroundColor: '#c8e9e1',
-          borderRadius: 20,
-          padding: 10,
-          marginTop: 10,
-          marginBottom: 40,
-          marginRight: 20
+{/* Display for Curriculum */}
+    <TouchableOpacity onPress={() => {
+        navigation.navigate('CurriculumList')
+      }}
+        style={{
+            height: "80%",
+            width: "40%",
+            backgroundColor: "#ccddd7",
+            borderRadius: 20,
+            padding: 10,
+            marginTop: 10,
+            marginBottom: 40,
+            marginRight: 20
         }}>
-      </View>
+          {error ? (
+            <Text style={{ fontSize: 15, fontWeight: 'bold', color: 'white', marginTop: 20 }}>{error}</Text>
+          ) : (
+            <>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10, marginTop: 15 }}>
+                <Ionicons name="document-text" size={iconSize} color="black" />
+              </View>
+              <Text style={{ fontSize: RFValue(13), fontWeight: 'bold', color: 'black', marginLeft: 10 }}>Curriculum</Text>
+            </>
+        )}
+    </TouchableOpacity>
     </View>
 
 {/* real-time date */}
@@ -361,6 +440,7 @@ const Dashboard = ({ navigation }) => {
       marginTop: 5,
       alignContent: 'center'
     }}>
+    </View>
 
 {/* Display 1 for data counts */}
       <View style={{ flexDirection: 'row', justifyContent: 'center',  }}>
@@ -541,19 +621,12 @@ const Dashboard = ({ navigation }) => {
 
 {/* Another extra space */}
       <View style={{
-          height: 50,
+          height: windowHeight * 0.05,
           backgroundColor: COLORS.primary,
           borderRadius: 15,
           padding: 10,
           marginTop: 20
         }}>
-        <Text style={{
-          fontSize: 30, // Set the font size for "WELCOME"
-          fontWeight: 'bold',
-          padding: 3, // Add padding to create space within the border
-          marginLeft: 10, // Add margin to separate "WELCOME" from the rest of the text
-        }}>
-        </Text>
       </View>
 
 {/* Another extra space */}
@@ -573,7 +646,7 @@ const Dashboard = ({ navigation }) => {
         </Text>
       </View>
 
-    </View>
+    
     </View>
     </View>
     </View>

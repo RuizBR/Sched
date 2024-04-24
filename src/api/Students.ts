@@ -1,16 +1,14 @@
 
 import axios, { AxiosResponse } from 'axios';
-import { createData, readData, updateData, deleteData, addCourseData } from './endpoints/Students';
-import { studentCourseModel, studentCoursesModel, studentModel, studentsModel } from '../models/Students';
-import { courseModel } from '../models/Courses';
+import { createData, readData, updateData, deleteData } from './endpoints/Students';
+import { studentModel, studentsModel } from '../models/Students';
 
-const baseUrl = 'http://192.168.1.9:3000';
+const baseUrl = 'http://ec2-3-27-173-249.ap-southeast-2.compute.amazonaws.com:3000';
 
 const readDataURL = `${baseUrl}${readData}`;
 const createDataURL = `${baseUrl}${createData}`;
 const updateDataURL = `${baseUrl}${updateData}`;
 const deleteDataURL = `${baseUrl}${deleteData}`;
-const addCourseDataURL = `${baseUrl}${addCourseData}`;
 
 export const readAllStudentsData = async (): Promise<AxiosResponse<studentsModel> | any> => {
     const response: AxiosResponse<studentsModel> = await axios.get(readDataURL);
@@ -74,85 +72,6 @@ export const deleteStudentData = async (studentData: studentModel): Promise<Axio
     } else if(response.status === 404){
         throw new Error (`Student not found: ${response.status}`);
     }else{
-        throw new Error(`Unexpected Status: ${response.status}`);
-    }
-};
-
-export const readAllCourseData = async (studentData: studentModel): Promise<AxiosResponse<studentCoursesModel> | any> => {
-    const studentId = studentData._id;
-    const url = `${readDataURL}student/${studentId}/courses`;
-    const response: AxiosResponse<studentCoursesModel> = await axios.get(url);
-    
-    if (response.status === 200) {
-        // console.log(response.data.courses)
-        return response.data.courses;
-        
-    } else if (response.status === 404) {
-        throw new Error(`No Courses Found`);
-    } else {
-        throw new Error(`Unexpected Status: ${response.status}`);
-    }
-};
-
-export const readCourseData = async (studentData: studentModel, courseData: studentCourseModel): Promise<AxiosResponse<studentsModel> | any> => {
-    const studentId = studentData._id
-    const courseCode = courseData._id
-    const url = `${readDataURL}student/${studentId}/course/${courseCode}`;
-    const response: AxiosResponse<studentsModel> = await axios.get(url);
-    
-    if (response.status === 200) {
-        return response.data;
-        
-    } else if (response.status === 404) {
-        throw new Error(`No Student Found`);
-    } else {
-        throw new Error(`Unexpected Status: ${response.status}`);
-    }
-};
-
-export const addCoursesData = async (studentData: studentModel, courseData: studentCourseModel): Promise<AxiosResponse<studentsModel> | any> => {
-    const studentId = studentData._id
-    const url = `${addCourseDataURL}${studentId}`;
-    const response: AxiosResponse<courseModel> = await axios.post(url, courseData);
-    
-    if (response.status === 200) {
-        return response.data;
-        
-    } else if (response.status === 404) {
-        throw new Error(`No Student Found`);
-    } else {
-        throw new Error(`Unexpected Status: ${response.status}`);
-    }
-};
-
-export const updateCourseData = async (studentData: studentModel, courseData: studentCourseModel): Promise<AxiosResponse<studentCoursesModel> | any> => {
-    const studentId = studentData._id
-    const courseId = courseData._id
-    const url = `${updateDataURL}student/${studentId}/course/${courseId}`;
-    const response: AxiosResponse<studentCoursesModel> = await axios.put(url, courseData);
-    
-    if (response.status === 200) {
-        return response.data.courses;
-        
-    } else if (response.status === 404) {
-        throw new Error(`No Student Found`);
-    } else {
-        throw new Error(`Unexpected Status: ${response.status}`);
-    }
-};
-
-export const deleteCourseData = async (studentData: studentModel, courseData: studentCourseModel): Promise<AxiosResponse<studentCoursesModel> | any> => {
-    const studentId = studentData._id
-    const courseId = courseData._id
-    const url = `${deleteDataURL}student/${studentId}/course/${courseId}`;
-    const response: AxiosResponse<studentCoursesModel> = await axios.delete(url);
-    
-    if (response.status === 200) {
-        return response.data.courses;
-        
-    } else if (response.status === 404) {
-        throw new Error(`No Student Found`);
-    } else {
         throw new Error(`Unexpected Status: ${response.status}`);
     }
 };

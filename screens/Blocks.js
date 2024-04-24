@@ -234,8 +234,16 @@ function StudentsList() {
                 </View>
 
                 <View>
-                    <Text style={{ fontSize: 20 }}>{item.program}</Text>
-                    <Text style={{ fontSize: 14, color: 'gray' }}>
+                    <Text style={{ fontSize: 20 }}>{item.program} - {item.major}</Text>
+                      <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ fontSize: 12, color: 'gray', marginRight: 20 }}>
+                          {item.year && `Year: ${item.year}`}
+                        </Text>
+                        <Text style={{ fontSize: 12, color: 'gray' }}>
+                          {item.semester && `Semester: ${item.semester}`}
+                        </Text>
+                      </View>
+                    <Text style={{ fontSize: 12, color: 'gray' }}>
                       {item.block && `Block: ${item.block}`}
                     </Text>
                 </View>

@@ -8,16 +8,16 @@ import COLORS from '../../constants/colors';
 
 class FacultyAdd extends Component {
     state = {
-        firstName: '',
-        lastName: '',
+        fname: '',
+        sname: '',
         specialized: [],
         modalVisible: false
     };
 
     clearInputs = () => {
         this.setState({
-            firstName: '',
-            lastName: '',
+            fname: '',
+            sname: '',
             specialized: []
         });
     };
@@ -38,11 +38,11 @@ class FacultyAdd extends Component {
     };
 
     handleFirstName = (text) => {
-        this.setState({ firstName: text });
+        this.setState({ fname: text });
     };
 
     handleLastName = (text) => {
-        this.setState({ lastName: text });
+        this.setState({ sname: text });
     };
 
     handleSpecialized = (selectedItems) => {
@@ -50,16 +50,16 @@ class FacultyAdd extends Component {
     };
 
     save = async () => {
-    const { firstName, lastName, specialized } = this.state;
+    const { fname, sname, specialized } = this.state;
 
-    if (!firstName || !lastName || !Array.isArray(specialized) || specialized.length === 0) {
+    if (!fname || !sname || !Array.isArray(specialized) || specialized.length === 0) {
         Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
         return;
     }
 
     try {
         const teacher = new Teachers();
-        const name = `${firstName} ${lastName}`;
+        const name = `${fname} ${sname}`;
 
         // Fetch details of the selected courses
         const courseDetailsPromises = specialized.map(courseId => readCourse(courseId));
@@ -75,7 +75,7 @@ class FacultyAdd extends Component {
         }));
 
         // Assuming `create` method returns a promise
-        await teacher.create(name, coursesForFaculty);
+        await teacher.create(fname, sname, coursesForFaculty);
 
         // Display a success message with faculty details
         setTimeout(() => {
@@ -144,7 +144,7 @@ class FacultyAdd extends Component {
                         placeholder=' ex. Juan'
                         placeholderTextColor={COLORS.grey}
                         onChangeText={this.handleFirstName}
-                        value={this.state.firstName}
+                        value={this.state.fname}
                         style={{
                             width: "100%",
                             color: COLORS.black, // Set the text color inside the input box to black
@@ -179,7 +179,7 @@ class FacultyAdd extends Component {
                         placeholder=' ex. De la Cruz'
                         placeholderTextColor={COLORS.grey}
                         onChangeText={this.handleLastName}
-                        value={this.state.lastName}
+                        value={this.state.sname}
                         style={{
                             width: "100%",
                             color: COLORS.black, // Set the text color inside the input box to black
@@ -244,6 +244,7 @@ class FacultyAdd extends Component {
             }}>
             <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Select Courses</Text>
             {/* Wrap MultiSelect with ScrollView */}
+            
             <ScrollView style={{ maxHeight: 400 }}> 
                 <MultiSelect
                     items={this.state.allCourses && this.state.allCourses.allCourses ? this.state.allCourses.allCourses.map(course => ({
@@ -291,14 +292,14 @@ class FacultyAdd extends Component {
                     submitButtonText="Submit"
                     onConfirm={() => {
                         
-                        const { firstName, lastName, specialized } = this.state;
-                        if (!firstName || !lastName || specialized.length === 0) {
+                        const { fname, sname, specialized } = this.state;
+                        if (!fname || !sname || specialized.length === 0) {
                             Alert.alert('Input failed', 'Please fill in all fields and select courses.', [{ text: 'OK' }]);
                             return;
                         }
 
                         // Call the save function to handle saving the selected courses
-                        this.save(this.state.firstName, this.state.lastName, this.state.specialized);
+                        this.save(this.state.fname, this.state.sname, this.state.specialized);
                         
                         // Close the modal or perform any additional actions
                         this.setState({ modalVisible: false });
@@ -335,7 +336,7 @@ class FacultyAdd extends Component {
                 justifyContent: 'center',
                 paddingHorizontal: 10,
             }}
-            onPress = {() => this.save(this.state.firstName, this.state.lastName, this.state.specialized)}>
+            onPress = {() => this.save(this.state.fname, this.state.sname, this.state.specialized)}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'white', textAlign: 'center' }}
                 >Save
                 </Text>

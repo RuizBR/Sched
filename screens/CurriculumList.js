@@ -1,36 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { readAllTeachers } from '../src/components/Teachers';
-import { deleteTeacher } from '../src/components/Teachers';
+import { readAllCurriculums } from '../src/components/Curriculums';
+import { deleteCurriculum } from '../src/components/Curriculums';
 import { Swipeable } from 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../constants/colors';
 
 
-function SubjectList() {
-  const [teachers, setTeachers] = useState([]);
+function CurriculumList() {
+  const [curriculum, setCurriculum] = useState([]);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
   const [selectedItems, setSelectedItems] = useState([]); // State to track selected items
   const [isSelectionMode, setIsSelectionMode] = useState(false);
 
   useEffect(() => {
-    fetchTeachers();
+    fetchCurriculum();
     const unsubscribe = navigation.addListener('focus', () => {
-      fetchTeachers(); // Refresh rooms when screen comes into focus
+      fetchCurriculum(); // Refresh rooms when screen comes into focus
     });
     return unsubscribe;
   }, [navigation]);
 
-  const fetchTeachers = async () => {
+  const fetchCurriculum = async () => {
     try {
-      const { allTeachers } = await readAllTeachers();
+      const { allCurriculums } = await readAllCurriculums();
       // Convert object to an array
-      const teachersArray = Object.values(allTeachers); // Assuming allTeachers is an object
+      const curriculumArray = Object.values(allCurriculums); // Assuming allCurriculum is an object
 
-      setTeachers(teachersArray);
+      setCurriculum(curriculumArray);
       setError(null);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -59,7 +59,7 @@ function SubjectList() {
 
     Alert.alert(
       'Delete Items',
-      'Are you sure you want to delete the selected faculty?',
+      'Are you sure you want to delete the selected item(s)?',
       [
         {
           text: 'Cancel',
@@ -70,8 +70,8 @@ function SubjectList() {
           text: 'Delete',
           onPress: async () => {
             try {
-              await Promise.all(selectedItems.map((itemId) => deleteTeacher(itemId)));
-              fetchTeachers(); // Refresh the teacher list after deletion
+              await Promise.all(selectedItems.map((itemId) => deleteCurriculum(itemId)));
+              fetchCurriculum(); // Refresh the Curriculum list after deletion
               setSelectedItems([]); // Clear selected items after deletion
               setIsSelectionMode(false); // Exit selection mode after deletion
             } catch (error) {
@@ -100,9 +100,9 @@ function SubjectList() {
         text: 'Delete',
         onPress: async () => {
           try {
-            await deleteTeacher(itemId);
+            await deleteCurriculum(itemId);
             // If you want to update the list after deletion, fetch faculty again
-            fetchTeachers();
+            fetchCurriculum();
           } catch (error) {
             console.error('Error deleting item:', error);
             // Handle error state or display an error message
@@ -115,16 +115,15 @@ function SubjectList() {
   );
   };
 
-  const handleEdit = (itemId) => {
-  // // Navigate to the EditTeacherScreen with the teacherId as a parameter
-  // navigation.navigate('EditFaculty', { teacherId: itemId });
-  };
-
+  // const handleEdit = (itemId) => {
+  // // Navigate to the EditTeacherScreen with the curriculumId as a parameter
+  // navigation.navigate('EditBlock', { blockId: itemId });
+  // };
   const handleSelectAll = () => {
-    const allItemIds = teachers.map((teachers) => teachers._id); // Corrected from room to rooms
+    const allItemIds = curriculum.map((curriculum) => curriculum._id); // Corrected from room to rooms
     setSelectedItems(allItemIds); // Mark all items as selected
   };
-  
+
   const renderSelectDeleteButtons = () => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -158,6 +157,22 @@ function SubjectList() {
         maxWidth: 90,
         marginTop: 20,
       }}>
+
+{/* button for edit function */}
+        {/* <TouchableOpacity onPress={() => handleEdit(itemId)}>
+          <View style={{
+            color: 'white',
+            width: 90,
+            height: 80,
+            marginBottom: 10,
+            backgroundColor: 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <Ionicons name="ios-create" size={30} color="white" style={{ marginLeft: 40 }} />
+          </View>
+        </TouchableOpacity> */}
+{/* button for delete function */}
         <TouchableOpacity activeOpacity={1} onPress={() => handleDelete(itemId)}>
           <View style={{
             color: 'white',
@@ -183,12 +198,12 @@ function SubjectList() {
       if (isSelectionMode) {
         handleSelectItem(itemId); // Select item if in selection mode
       } else {
-        navigation.navigate('Edit_Faculty', { teacherId: itemId });
+        navigation.navigate('EditCurriculum', { curriculumId: itemId });
       }
     };
 
     const isSelected = selectedItems.includes(item._id);
-
+    
   return (
 
 // properties of the flat list
@@ -202,31 +217,26 @@ function SubjectList() {
             activeOpacity={1}
             onPress={() => handleItemClick(item._id)}
             style={{
-              padding: 20,
-              width: '90%',
-              height: 80,
-              borderRadius: 15,
-              backgroundColor: isSelected ? '#ccc' : '#dedddf',
-              marginTop: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+                padding: 20,
+                width: '90%',
+                height: 80,
+                borderRadius: 15,
+                backgroundColor: isSelected ? '#ccc' : '#dedddf',
+                marginTop: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between', // Added to space items evenly
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                 <View style={{ marginRight: 20 }}>
-                  <Ionicons name="ios-people" size={25} color="black" />
+                  <Ionicons name="document-text" size={25} color="black" />
                 </View>
 
-                  <View>
-                      <Text style={{ fontSize: 20 }}>{item.fname} {item.sname}</Text>
-                      <Text style={{ fontSize: 14, color: 'gray' }}>
-                        {item.specialized &&
-                          `Specialized: ${item.specialized
-                            .map((course) => course.code)
-                            .join(', ')}`}
-                      </Text>
-                  </View>
+                <View>
+                    <Text style={{ fontSize: 20 }}>{item.program} - {item.major}</Text>
+                    <Text style={{ fontSize: 14, color: 'gray' }}>{item.semester && `Semester: ${item.semester}`}, {item.year && `Year: ${item.year}`}</Text>
+                </View>
             </View>
 
             {isSelectionMode && (
@@ -234,11 +244,9 @@ function SubjectList() {
                 name={isSelected ? 'ios-checkbox' : 'ios-checkbox-outline'}
                 size={25}
                 color={isSelected ? COLORS.primary : 'grey'}
-                style={{ marginRight: 20 }}
               />
             )}
-        </TouchableOpacity>
-
+          </TouchableOpacity>
       </View>
       </Swipeable>
     </GestureHandlerRootView>
@@ -253,7 +261,7 @@ function SubjectList() {
               marginLeft: 20,
               marginTop: 20,
               marginBottom: 10,
-            }}>Faculty List
+            }}>Curriculum
           </Text>
           <View style={{ marginRight: 20 }}>{renderSelectDeleteButtons()}</View>
         </View>
@@ -267,40 +275,40 @@ function SubjectList() {
             }}>{error}</Text>
           ) : (
             <FlatList
-              data={teachers}
+              data={curriculum}
               renderItem={renderItem}
-              keyExtractor={(teacher) => teacher._id} // Convert _id to string
+              keyExtractor={(curriculum) => curriculum._id} // Convert _id to string
             />
           )}
-
+          
         {/* Button */}
-          <TouchableOpacity
-            style={{
-              position: 'absolute',
-              width: 60,
-              height: 60,
-              borderRadius: 30,
-              backgroundColor: COLORS.primary, // Change this to your desired color
-              justifyContent: 'center',
-              alignItems: 'center',
-              bottom: 30,
-              right: 40,
-              elevation: 3, // Add elevation for shadow (Android)
-              shadowColor: '#000', // Add shadow for iOS
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.5,
-              shadowRadius: 3,
-            }}
-            onPress={() => {
-              navigation.navigate('FacultyAdd');
-              console.log('Floating button pressed');
-            }}>
-            {/* You can customize the icon or content of the floating button */}
-            <Ionicons name="ios-add" size={30} color="white" />
-          </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  position: 'absolute',
+                  width: 60,
+                  height: 60,
+                  borderRadius: 30,
+                  backgroundColor: COLORS.primary, // Change this to your desired color
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  bottom: 30,
+                  right: 40,
+                  elevation: 3, // Add elevation for shadow (Android)
+                  shadowColor: '#000', // Add shadow for iOS
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 3,
+                }}
+                onPress={() => {
+                  navigation.navigate('Curriculum');
+                  console.log('Floating button pressed');
+                }}>
+                {/* You can customize the icon or content of the floating button */}
+                <Ionicons name="ios-add" size={30} color="white" />
+              </TouchableOpacity>
     </View>
   );
 }
 
 
-export default SubjectList;
+export default CurriculumList;

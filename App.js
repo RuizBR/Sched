@@ -20,9 +20,12 @@ import Rooms from './screens/RoomList';
 import Blocks from './screens/Blocks';
 import Signup from './screens/Starting/Signup';
 import EditCourseScreen from './screens/EditForm/editCourseScreen';
-import EditFacultyScreen from './screens/EditForm/editFacultyScreen';
 import EditRoomScreen from './screens/EditForm/editRoomScreen';
 import EditBlockScreen from './screens/EditForm/editBlockScreen';
+import EditCurriculumScreen from './screens/EditForm/EditCurriculum';
+import AddCurriculum from './screens/AddForm/Curriculum';
+import CurriculumList from './screens/CurriculumList';
+import FacultyEdit from './screens/EditForm/editFaculty';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -119,19 +122,22 @@ function App(navigation) {
       <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={Welcome} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="SubjectList" component={SubjectList} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="SubjectAdd" component={SubjectAdd} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="FacultyList" component={FacultyList} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="FacultyAdd" component={FacultyAdd} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="AddBlock" component={AddBlock} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="Rooms" component={Rooms} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="Blocks" component={Blocks} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="AddRoom" component={AddRoom} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="Signup" component={Signup} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="EditCourse" component={EditCourseScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="EditBlock" component={EditBlockScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="EditFaculty" component={EditFacultyScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
-        <Stack.Screen name="EditRoom" component={EditRoomScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#E0F2F1" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="SubjectList" component={SubjectList} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="SubjectAdd" component={SubjectAdd} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="FacultyList" component={FacultyList} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="FacultyAdd" component={FacultyAdd} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="AddBlock" component={AddBlock} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Rooms" component={Rooms} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Blocks" component={Blocks} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="AddRoom" component={AddRoom} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Signup" component={Signup} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditCourse" component={EditCourseScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditBlock" component={EditBlockScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditRoom" component={EditRoomScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Curriculum" component={AddCurriculum} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="EditCurriculum" component={EditCurriculumScreen} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="CurriculumList" component={CurriculumList} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
+        <Stack.Screen name="Edit_Faculty" component={FacultyEdit} options={{ headerTitle: 'Adaptive Scheduling System', headerStyle: { backgroundColor: "#c8e3e0" }, headerTitleAlign: 'center' }} />
         <Stack.Screen
           name="Dashboard"
           component={TabNavigator}

@@ -1,5 +1,5 @@
-import { readStudentData, createStudentData, updateStudentData, deleteStudentData, readAllStudentsData, readAllCourseData, readCourseData, addCoursesData, updateCourseData, deleteCourseData } from '../api/Students';
-import { studentModel, studentsModel, studentCourseModel, studentCoursesModel } from '../models/Students';
+import { readStudentData, createStudentData, updateStudentData, deleteStudentData, readAllStudentsData } from '../api/Students';
+import { studentModel, studentsModel } from '../models/Students';
 
 
 export const readAllStudents = async (): Promise<{ allStudents: Array<studentsModel> } | any> => {
@@ -14,7 +14,6 @@ export const readAllStudents = async (): Promise<{ allStudents: Array<studentsMo
         year: student.year,
         semester: student.semester,
         block: student.block,
-        courses: student.courses
       }));
 
     return { allStudents };
@@ -37,12 +36,11 @@ export const readStudent = async (getID: string): Promise<studentModel | any> =>
     const _id = response._id;
     const program = response.program;
     const major = response.major;
-    const year = response.year; //response.student.year
+    const year = response.year; 
     const semester = response.semester;
     const block = response.block;
-    const courses = response.courses;
 
-    return { _id, program, major, year, semester, block, courses };
+    return { _id, program, major, year, semester, block };
     
 
 
@@ -56,15 +54,13 @@ export const createStudent = async (
   getMajor: string,
   getYear: string, 
   getSemester: string, 
-  getBlock: string, 
-  getCourses: any) => {
+  getBlock: string) => {
   const newStudent: studentModel = {
     program: getProgram,
     major: getMajor,
     year: getYear,
     semester: getSemester,
     block: getBlock,
-    courses: getCourses
   };
   try {
     const response = await createStudentData(newStudent);
@@ -81,19 +77,16 @@ export const updateStudent = async (
   getMajor: string,
   getYear: string, 
   getSemester: string, 
-  getBlock: string, 
-  getCourses: any) => {
+  getBlock: string) => {
   const newStudent: studentModel = {
     _id: getID,
     program: getProgram,
     major: getMajor,
     year: getYear,
     semester: getSemester,
-    block: getBlock,
-    courses: getCourses
+    block: getBlock
   };
   try {
-    
     const response = await updateStudentData(newStudent);
     console.log(`Student update successfully:`, response.students);
     return response.students;
@@ -113,115 +106,5 @@ export const deleteStudent = async (getID: string) => {
 
   } catch (error: any) {
     console.error(`Failed to delete student: ${error.message}`);
-  }
-};
-
-export const readAllStudentCourses = async (getID: string): Promise<Array<studentCoursesModel> | any> => {
-  try {
-    const student: studentModel = { _id: getID };
-    const response = await readAllCourseData(student);
-
-    if (Array.isArray(response)) {
-      const allCourses: studentCourseModel[] = response.map((course: studentCourseModel) => ({
-        _id: course._id, 
-        code: course.code,
-        description: course.description,
-        units: course.units,
-        type: course.type
-      }));
-
-      return { allCourses };
-
-    } else {
-      console.error('Invalid response format. Expected an array.');
-      return null;
-    }
-
-  } catch (error: any) {
-    console.error(`Failed to read all courses: ${error.message}`);
-  }
-}
-
-export const readStudentCourse = async (getStudentID: string, getCourseCourse: string): Promise<studentCourseModel | any> => {
-  try {
-    const student: studentModel = { _id: getStudentID };
-    const course: studentModel = { _id: getCourseCourse };
-    const response = await readCourseData(student, course);
-
-    const _id = response.course._id;
-    const code = response.course.code;
-    const description = response.course.description; 
-    const units = response.course.units;
-    const type = response.course.type;
-
-    return { _id, code, description, units, type };
-
-  } catch (error: any) {
-    console.error(`Failed to read all courses: ${error.message}`);
-  }
-}
-
-export const addStudentCourse = async (getStudentID: string, getCode: string, getDescription: string, getUnits: string, getType: string) => {
-  const student: studentModel = { _id: getStudentID };
-  const newCourse: studentCourseModel = {
-    code: getCode,
-    description: getDescription,
-    units: getUnits,
-    type: getType
-  };
-  try {
-    const response = await addCoursesData(student, newCourse);
-    console.log(`Student created successfully:`, response);
-    return response.student;
-  } catch (error: any) {
-    console.error(`Failed to delete student: ${error.message}`);
-  }
-};
-
-export const updateStudentCourse = async (getStudentID: string, getID: string, getCode: string, getDescription: string, getUnits: string, getType: string) => {
-  const student: studentModel = { _id: getStudentID };
-  const newCourse: studentCourseModel = {
-    _id: getID,
-    code: getCode,
-    description: getDescription,
-    units: getUnits,
-    type: getType
-  };
-  
-  try {
-    const response: studentCourseModel[] = await updateCourseData(student, newCourse);
-    
-    if (response.length > 0) {
-      const updatedCourse = response.find(course => course._id === getID);
-
-      if (updatedCourse) {
-        console.log(`Course update successfully:`, updatedCourse);
-        return updatedCourse
-      } else {
-        console.log(`Updated course not found.`);
-      }
-    } else {
-      console.log(`No courses found for the student.`);
-    }
-
-    
-  } catch (error: any) {
-    console.error(`Failed to update course: ${error.message}`);
-  }
-};
-
-export const deleteStudentCourses = async (getStudentID: string, getCourseId: string): Promise<studentCourseModel | null> => {
-  const student: studentModel = { _id: getStudentID };
-  const course: studentModel = { _id: getCourseId };
-
-  try {
-    const deletedCourse: studentCourseModel | null = await deleteCourseData(student, course);
-
-    console.log('Course Deleted!', deletedCourse);
-    return deletedCourse;
-    
-  } catch (error: any) {
-    console.error(`Failed to delete course: ${error.message}`);
-    throw error; // Re-throw the error to let the caller handle it
   }
 };
