@@ -285,6 +285,7 @@ function StudentsList() {
             }}>{error}</Text>
           ) : (
             <FlatList
+              style={{ marginBottom: 30 }}
               data={students}
               renderItem={renderItem}
               keyExtractor={(student) => student._id} // Convert _id to string

@@ -275,6 +275,7 @@ function CurriculumList() {
             }}>{error}</Text>
           ) : (
             <FlatList
+              style={{ marginBottom: 30 }}
               data={curriculum}
               renderItem={renderItem}
               keyExtractor={(curriculum) => curriculum._id} // Convert _id to string

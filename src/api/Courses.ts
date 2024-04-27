@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios';
 import { createData, readData, updateData, deleteData } from './endpoints/Courses';
 import { courseModel, coursesModel } from '../models/Courses';
 
-const baseUrl = 'http://ec2-3-27-173-249.ap-southeast-2.compute.amazonaws.com:3000';
+const baseUrl = 'http://ec2-54-252-208-78.ap-southeast-2.compute.amazonaws.com:3000';
 
 const readDataURL = `${baseUrl}${readData}`;
 const createDataURL = `${baseUrl}${createData}`;

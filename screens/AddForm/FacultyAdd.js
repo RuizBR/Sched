@@ -257,10 +257,10 @@ class FacultyAdd extends Component {
                     })) : []}
                     uniqueKey="_id"
                     onSelectedItemsChange={selectedItems => {
-                        // Limit the selected items to a maximum of 4 
+                        // Limit the selected items to a maximum of 5 
                         let limitedSelectedItems = selectedItems;
-                        if (limitedSelectedItems.length > 4) {
-                            limitedSelectedItems = limitedSelectedItems.slice(0, 4);
+                        if (limitedSelectedItems.length > 5) {
+                            limitedSelectedItems = limitedSelectedItems.slice(0, 5);
                         }
                         this.setState({ specialized: limitedSelectedItems });
                     }}

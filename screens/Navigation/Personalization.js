@@ -593,9 +593,13 @@ const Personalization = ({ navigation }) => {
                                         }}/>
                                 </View>
                             )}
-                    <TouchableOpacity onPress={() => setIsModalVisible(false)} style={{ alignItems: 'center', marginTop: 20 }}>
-                        <Text style={{ fontSize: 16, color: 'blue' }}>Close Modal</Text>
+                    <View style={{ alignItems: "center" }}>
+                    <TouchableOpacity style={{ backgroundColor: "#b2ccc5", borderRadius: 20, padding: 10, marginTop: 20, alignItems: 'center',}} onPress={() => {
+                        setIsModalVisible(false);
+                        }}>
+                        <Ionicons name="close" size={20} color="black"/>
                     </TouchableOpacity>
+                    </View>
                     </View>
                 </ScrollView>
                 </View>

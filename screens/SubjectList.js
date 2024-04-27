@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { readAllCourses } from '../src/components/Courses';
 import { deleteCourse } from '../src/components/Courses';
@@ -14,6 +14,7 @@ function SubjectList() {
   const navigation = useNavigation();
   const [selectedItems, setSelectedItems] = useState([]); // State to track selected items
   const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchCourses();
@@ -22,7 +23,6 @@ function SubjectList() {
     });
     return unsubscribe;
   }, [navigation]);
-  
 
   const fetchCourses = async () => {
     try {
@@ -47,7 +47,7 @@ function SubjectList() {
       setSelectedItems((prevItems) => [...prevItems, itemId]); // Select if not already selected
     }
   };
-  
+
   const handleDeleteSelected = async () => {
     if (selectedItems.length === 0) {
       // If no items are selected, return or display an alert indicating no items are selected
@@ -83,45 +83,38 @@ function SubjectList() {
     );
   };
 
-
   const handleDelete = (itemId) => {
-  Alert.alert(
-    'Delete Item',
-    'Are you sure you want to delete this course?',
-    [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'Delete',
-        onPress: async () => {
-          try {
-            await deleteCourse(itemId);
-            // If you want to update the list after deletion, fetch courses again
-            fetchCourses();
-          } catch (error) {
-            console.error('Error deleting item:', error);
-            // Handle error state or display an error message
-          }
+    Alert.alert(
+      'Delete Item',
+      'Are you sure you want to delete this course?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
         },
-        style: 'destructive',
-      },
-    ],
-    { cancelable: true }
-  );
+        {
+          text: 'Delete',
+          onPress: async () => {
+            try {
+              await deleteCourse(itemId);
+              // If you want to update the list after deletion, fetch courses again
+              fetchCourses();
+            } catch (error) {
+              console.error('Error deleting item:', error);
+              // Handle error state or display an error message
+            }
+          },
+          style: 'destructive',
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
-  // const handleEdit = (itemId) => {
-  // // Navigate to the EditCourseScreen with the courseId as a parameter
-  // navigation.navigate('EditCourse', { courseId: itemId });
-  // };
-  const handleSelectAll = () => {
-    const allItemIds = courses.map((course) => course._id);
-    setSelectedItems(allItemIds); // Mark all items as selected
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
-  
 
   const renderSelectDeleteButtons = () => {
     return (
@@ -134,9 +127,6 @@ function SubjectList() {
           </>
         ) : (
           <>
-            <TouchableOpacity onPress={handleSelectAll}>
-              <Ionicons name="ios-checkbox" size={24} color="black" style={{ marginRight: 12 }} />
-            </TouchableOpacity>
             <TouchableOpacity onPress={handleDeleteSelected}>
               <Ionicons name="trash" size={24} color="black" style={{ marginRight: 15 }} />
             </TouchableOpacity>
@@ -148,7 +138,6 @@ function SubjectList() {
       </View>
     );
   };
-  
 
   const renderRightActions = (itemId) => {
     return (
@@ -187,91 +176,105 @@ function SubjectList() {
         navigation.navigate('EditCourse', { courseId: itemId });
       }
     };
-
+  
     const isSelected = selectedItems.includes(item._id);
-    
-  return (
-    
-// properties of the flat list
-    <GestureHandlerRootView>
-      <Swipeable
-        renderRightActions={() => renderRightActions(item._id)}
-        overshootRight={false}
-      >
-      <View style={{ alignItems: 'center' }}>
-        <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => handleItemClick(item._id)}
-            style={{
-              padding: 20,
-              width: '90%',
-              height: 80,
-              borderRadius: 15,
-              backgroundColor: isSelected ? '#ccc' : '#dedddf',
-              marginTop: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
+  
+    // Check if either the course code or description contains the search query
+    if (
+      item.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
+      return (
+        <GestureHandlerRootView>
+          <Swipeable
+            renderRightActions={() => renderRightActions(item._id)}
+            overshootRight={false}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={{ marginRight: 20 }}>
+            <View style={{ alignItems: 'center' }}>
+              <TouchableOpacity
+                activeOpacity={1}
+                onPress={() => handleItemClick(item._id)}
+                style={{
+                  padding: 20,
+                  width: '90%',
+                  height: 80,
+                  borderRadius: 15,
+                  backgroundColor: isSelected ? '#ccc' : '#dedddf',
+                  marginTop: 10,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View style={{ marginRight: 20 }}>
                     <Ionicons name="ios-book" size={25} color="black" />
-                </View>
-
-                  <View>
-                      <Text style={{ fontSize: 20 }}>{item.code}</Text>
-                      <Text style={{ fontSize: 14, color: 'gray' }}>{item.description}</Text>
                   </View>
+  
+                  <View>
+                    <Text style={{ fontSize: 20 }}>{item.code}</Text>
+                    <Text style={{ fontSize: 14, color: 'gray' }}>{item.description}</Text>
+                  </View>
+                </View>
+  
+                {isSelectionMode && (
+                  <Ionicons
+                    name={isSelected ? 'ios-checkbox' : 'ios-checkbox-outline'}
+                    size={25}
+                    color={isSelected ? COLORS.primary : 'grey'}
+                    style={{ marginLeft: 20 }}
+                  />
+                )}
+              </TouchableOpacity>
             </View>
-            
-            {isSelectionMode && (
-              <Ionicons
-                name={isSelected ? 'ios-checkbox' : 'ios-checkbox-outline'}
-                size={25}
-                color={isSelected ? COLORS.primary : 'grey'}
-                style={{ marginLeft: 20 }}
-              />
-            )}
-        </TouchableOpacity>
-
-      </View>
-      </Swipeable>
-    </GestureHandlerRootView>
-    
-  );
-};
+          </Swipeable>
+        </GestureHandlerRootView>
+      );
+    } else {
+      return null;
+    }
+  };
+  
 
   return (
     <View style={{ flex: 1, backgroundColor: COLORS.teal }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text style={{
-              fontSize: 24,
-              marginLeft: 20,
-              marginTop: 20,
-              marginBottom: 10,
-            }}>Courses
-          </Text>
+        <Text style={{
+          fontSize: 24,
+          marginLeft: 20,
+          marginTop: 20,
+          marginBottom: 10,
+        }}>Courses
+        </Text>
 
-          {/* Render the selection buttons */}
-          <View style={{ marginRight: 20 }}>{renderSelectDeleteButtons()}</View>
+        {/* Render the selection buttons */}
+        <View style={{ marginRight: 20 }}>{renderSelectDeleteButtons()}</View>
       </View>
 
-        {error ? (
-          <Text style={{
-              fontSize: 18,
-              color: 'red',
-              textAlign: 'center',
-              marginTop: 20,
-          }}>{error}</Text>
-          
-        ) : (
-          <FlatList
-              data={courses}
-              renderItem={renderItem}
-              keyExtractor={(course) => course._id}
+      {error ? (
+        <Text style={{
+          fontSize: 18,
+          color: 'red',
+          textAlign: 'center',
+          marginTop: 20,
+        }}>{error}</Text>
+
+      ) : (
+        <>
+          <TextInput
+            style={{ backgroundColor: 'white', marginHorizontal: 20, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 10, marginBottom: 10 }}
+            placeholder="Search..."
+            value={searchQuery}
+            onChangeText={handleSearch}
           />
-        )}
+          <FlatList
+            style={{ marginBottom: 30 }}
+            data={courses}
+            renderItem={renderItem}
+            keyExtractor={(course) => course._id}
+          />
+        </>
+      )}
 
       {/* Button */}
       <TouchableOpacity
@@ -298,12 +301,8 @@ function SubjectList() {
         {/* You can customize the icon or content of the floating button */}
         <Ionicons name="ios-add" size={30} color="white" />
       </TouchableOpacity>
-
-</View>
-    
-    
+    </View>
   );
 }
-
 
 export default SubjectList;

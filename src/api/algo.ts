@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const baseUrl = 'http://ec2-3-27-173-249.ap-southeast-2.compute.amazonaws.com:5000/activate_csp_algorithm';
+const baseUrl = 'http://ec2-54-252-208-78.ap-southeast-2.compute.amazonaws.com:5000/activate_csp_algorithm';
 
 export const fetchData = async (): Promise<any> => {
   try {

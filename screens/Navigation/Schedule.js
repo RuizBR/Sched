@@ -393,7 +393,7 @@ const Schedule = ({ navigation }) => {
               alignItems: 'center',
             }}
           >
-            <Text style={{ fontSize: 20 }}>Option: {index + 1}</Text>
+            <Text style={{ fontSize: 20 }}>Schedule: {index + 1}</Text>
           </TouchableOpacity>
         )}
         keyExtractor={(item, index) => index.toString()}
@@ -452,23 +452,23 @@ const Schedule = ({ navigation }) => {
             {showScheduleTables[programIndex] && (
               <View style={{ borderWidth: 1, borderColor: 'black', marginTop: 10 }}>
                 <View style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'black', backgroundColor: 'white' }}>
-                  <Text style={{ flex: 1 }}>Course</Text>
+                  <Text style={{ flex: 0.7 }}>Course</Text>
                   <Text style={{ flex: 1 }}>Course Description</Text>
                   {/* <Text style={{ flex: 1 }}>Course Unit</Text> */}
                   <Text style={{ flex: 1 }}>Day</Text>
                   <Text style={{ flex: 1 }}>Time</Text>
-                  {/* <Text style={{ flex: 1 }}>Room</Text> */}
+                  <Text style={{ flex: 0.7 }}>Room</Text>
                   <Text style={{ flex: 1 }}>Instructor</Text>
                 </View>
                 {program.sched.map((sched, schedIndex) => (
                   <View key={schedIndex} style={{ flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'black' }}>
-                    <Text style={{ flex: 1 }}>{sched.courseCode}</Text>
+                    <Text style={{ flex: 0.7 }}>{sched.courseCode}</Text>
                     <Text style={{ flex: 1 }}>{sched.courseDescription}</Text>
                     {/* <Text style={{ flex: 1 }}>{sched.courseUnit}</Text> */}
                     <Text style={{ flex: 1 }}>{sched.day}</Text>
                     <Text style={{ flex: 1 }}>{sched.time}</Text>
-                    {/* <Text style={{ flex: 1 }}>{sched.room}</Text> */}
-                    <Text style={{ flex: 1 }}>{sched.instructor}</Text>
+                    <Text style={{ flex: 0.7 }}>{sched.room}</Text>
+                    <Text style={{ flex: 0.8 }}>{sched.instructor}</Text>
                   </View>
                 ))}
               </View>
@@ -476,16 +476,20 @@ const Schedule = ({ navigation }) => {
           </View>
         );
       })}
-      <TouchableOpacity onPress={() => setModalVisible(false)} style={{ alignItems: 'center', marginTop: 20 }}>
-        <Text style={{ fontSize: 16, color: 'blue' }}>Close Modal</Text>
-      </TouchableOpacity>
     </View>
   )}
 </ScrollView>
+    <View style={{ alignItems: "center", marginBottom: 20 }}>
+        <TouchableOpacity style={{ backgroundColor: "#b2ccc5", borderRadius: 20, padding: 10, marginTop: 20, alignItems: 'center',}} onPress={() => {
+          setModalVisible(false);
+            }}>
+              <Ionicons name="close" size={20} color="black"/>
+        </TouchableOpacity>
+    </View>
 
         </View>
       </View>
-    </Modal>
+</Modal>
 
     
       </View>

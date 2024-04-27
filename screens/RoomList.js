@@ -256,6 +256,7 @@ function RoomList() {
             }}>{error}</Text>
           ) : (
             <FlatList
+              style={{ marginBottom: 30 }}
               data={rooms}
               renderItem={renderItem}
               keyExtractor={(room) => room._id}
